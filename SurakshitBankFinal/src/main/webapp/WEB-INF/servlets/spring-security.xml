@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/security 
+        http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<http use-expressions="true" access-denied-page="/accessDenied" disable-url-rewriting="true">
+		<intercept-url pattern="/index*" access="permitAll"/>
+		<intercept-url pattern="/login" access="permitAll"/>
+		<intercept-url pattern="/login*" access="permitAll"/>
+		<intercept-url pattern="/employee*" access="hasRole('EMPLOYEE')"/>
+		<intercept-url pattern="/admin*" access="hasRole('ADMIN')"/>
+		<intercept-url pattern="/customer*" access="hasRole('CUSTOMER')"/>
+		<intercept-url pattern="/merchant*" access="hasRole('MERCHANT')"/>
+		
+		<form-login 
+			authentication-failure-url="/loginfailed" 
+			authentication-success-handler-ref="SurakshitAuthSuccessHandler"/>
+	
+		<session-management invalid-session-url="/index.jsp">
+			<concurrency-control expired-url="/index.jsp"/>
+		</session-management>
+		
+		<logout logout-success-url="/index.jsp" />
+	</http>
+
+	<beans:bean id="SurakshitAuthSuccessHandler"
+		class="asu.bank.security.service.SurakshitAuthenticationSuccessHandler" />
+	
+		
+	<beans:bean name="authenticationService"
+		class="asu.bank.security.service.AuthenticationService" />
+	
+	<authentication-manager>
+		<authentication-provider user-service-ref="authenticationService" >
+			<password-encoder hash="bcrypt" />    
+		</authentication-provider>
+	</authentication-manager>
+	
+</beans:beans>
