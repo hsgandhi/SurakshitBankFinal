@@ -24,16 +24,16 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 	HibernateUtility hibernateUtility;
 
 	@Override
-	public UserDtls getUserDtlsFromUserName(String userName) throws BadCredentialsException, Exception {
+	public UserDtls getUserDtlsFromUserName(String emailId) throws BadCredentialsException, Exception {
 		UserDtls userDtls = new UserDtls();
 		List<SimpleGrantedAuthority> authorities;
 		
-		/*List<User> userList = (List<User>)hibernateUtility.getSession().createQuery("FROM User where name= :NameUser");
-					.setParameter("NameUser", userName);
-*/		
-		List<User> userList = (List<User>)hibernateUtility.getSession().createCriteria(User.class)
+		List<User> userList = (List<User>)hibernateUtility.getSession().createQuery("FROM User where emailId= :Email")
+					.setParameter("Email", emailId).list();
+		
+		/*List<User> userList = (List<User>)hibernateUtility.getSession().createCriteria(User.class)
 								.add(Restrictions.eq("name", userName))
-								.list();
+								.list();*/
 		
 		if(userList.isEmpty())
 			throw new BadCredentialsException("User Name or password not found");
@@ -43,7 +43,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			authorities = new ArrayList<SimpleGrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority(user.getRole()));
 			
-			userDtls.setUsername(user.getName());
+			userDtls.setUsername(user.getEmailId());
 			
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			String hashedPassword = passwordEncoder.encode(user.getPassword());
@@ -53,7 +53,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			userDtls.setAuthorities(authorities);
 			
 			userDtls.setEnabled(true);
-			userDtls.setAccountNonLocked(true);
+			userDtls.setAccountNonLocked(user.getIsAccountLocked().equals("0")?true:false);
 			//userDtls.setEnabled();
 		}
 		

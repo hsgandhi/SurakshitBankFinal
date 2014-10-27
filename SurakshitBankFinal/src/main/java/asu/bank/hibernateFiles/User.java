@@ -33,6 +33,7 @@ public class User implements java.io.Serializable {
 	private String documentId;
 	private String password;
 	private String role;
+	private String isAccountLocked;
 	//private Merchant merchant;
 	private Set<Operation> operations = new HashSet(0);
 	private Set<Account> accounts = new HashSet(0);
@@ -44,18 +45,20 @@ public class User implements java.io.Serializable {
 	}
 
 	public User(String name, String address, String emailId, long phoneNumber,
-			String documentId, String password) {
+			String documentId, String password , String isAccountLocked) {
 		this.name = name;
 		this.address = address;
 		this.emailId = emailId;
 		this.phoneNumber = phoneNumber;
 		this.documentId = documentId;
 		this.password = password;
+		this.isAccountLocked = isAccountLocked;
 	}
 
 	public User(String name, String address, String emailId, long phoneNumber,
 			String documentId, String password, String role,
 			//Merchant merchant,
+			String isAccountLocked,
 			Set<Account> accounts ,
 			Set<Operation> operations, Customer customer, Set<Transaction> transactionsForPrimaryParty,
 			Set<Transaction> transactionsForSecondaryParty) {
@@ -67,6 +70,7 @@ public class User implements java.io.Serializable {
 		this.password = password;
 		this.role = role;
 		//this.merchant = merchant;
+		this.isAccountLocked= isAccountLocked;
 		this.accounts=accounts;
 		this.operations = operations;
 		this.customer = customer;
@@ -157,6 +161,16 @@ public class User implements java.io.Serializable {
 		this.merchant = merchant;
 	}
 */
+	
+	@Column(name = "IsAccountLocked", nullable = false, length = 1)
+	public String getIsAccountLocked() {
+		return this.isAccountLocked;
+	}
+
+	public void setIsAccountLocked(String isAccountLocked) {
+		this.isAccountLocked = isAccountLocked;
+	}
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
 	public Set<Account> getAccounts() {
 		return this.accounts;

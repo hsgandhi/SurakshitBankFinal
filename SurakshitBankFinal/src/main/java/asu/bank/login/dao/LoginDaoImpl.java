@@ -1,32 +1,28 @@
 package asu.bank.login.dao;
 
-import java.math.BigDecimal;
-
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import asu.bank.hibernateFiles.Account;
+import asu.bank.hibernateFiles.User;
 import asu.bank.utility.HibernateUtility;
+import asu.bank.utility.SurakshitException;
+import asu.bank.utility.UserDataUtility;
 
 @Repository
 public class LoginDaoImpl implements LoginDao {
 	
-	/*@Autowired
-	private SessionFactory sessionFactory;*/
 	@Autowired
 	HibernateUtility hibernateUtility;
+	@Autowired
+	UserDataUtility userDataUtility;
 	
 	@Override
-	public void testRoom(String name, String age, String sex) throws Exception {
+	public void testRoom(String emailId, String age, String sex) throws SurakshitException,Exception {
 		System.out.println("in dao");
 		
-		Account account = new Account();
+		User user = userDataUtility.getUserDtlsFromEmailId(emailId);
 		
-		hibernateUtility.getSession().save(account);
-		hibernateUtility.getSession().flush();
-		System.out.println(account.getAccountId());
-		throw new Exception("Abort the transacion");
 	}
 
 	@Override

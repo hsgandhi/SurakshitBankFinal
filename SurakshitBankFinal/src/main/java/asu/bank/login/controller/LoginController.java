@@ -37,7 +37,6 @@ public class LoginController {
 	@RequestMapping(value="/login", method = RequestMethod.POST)
 	public String login(HttpServletRequest request,ModelMap model) {
 		System.out.println("in login");
-		request.getParameter("j_username");
 		try
 		{
 		//loginService.testRoom("Jaydeep", "18", "M");
@@ -52,8 +51,10 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value="/adminTrial", method = RequestMethod.POST)
-	public String showHomePage(@ModelAttribute("trialBean")@Valid TrialBean trialBean, BindingResult result, ModelMap model)
+	public String showHomePage(@ModelAttribute("trialBean")@Valid TrialBean trialBean, BindingResult result, ModelMap model) throws SurakshitException, Exception
 	{
+		
+		//loginService.testRoom("hsgandhi@asu.edu", "hi", "hi");
 		loginValidator.validate(trialBean, result);
 		
 		
@@ -95,7 +96,6 @@ public class LoginController {
 			error = "Invalid username and password!";
 		}
 
-		
 		model.addAttribute("errorDisplay", "display");
 		return "login/login";
 	}

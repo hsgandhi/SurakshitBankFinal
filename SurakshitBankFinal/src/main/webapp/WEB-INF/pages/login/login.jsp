@@ -31,7 +31,7 @@
 		<br/>
 	</security:authorize>
 	<form action="j_spring_security_check" method="POST">
-        <label for="username">User Name1:</label>
+        <label for="username">User Name:</label>
         <input id="username" name="j_username" type="text" value=""/><br/><br/>
         <label for="password">Password:</label>
         <input id="password" name="j_password" type="password"/><br/><br/>

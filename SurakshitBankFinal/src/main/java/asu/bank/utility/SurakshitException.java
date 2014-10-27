@@ -13,7 +13,6 @@ public class SurakshitException extends RuntimeException {
 	public static Map<String,String> errorMap= new HashMap<String,String>();
 	
 	static{
-		System.out.println("Hi I am here");
 		if(errorMap.isEmpty())
 		{
 			errorMap.put("LowBalance", "The balance is not sufficient");
