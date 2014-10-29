@@ -54,7 +54,6 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			
 			userDtls.setEnabled(true);
 			userDtls.setAccountNonLocked(user.getIsAccountLocked().equals("0")?true:false);
-			//userDtls.setEnabled();
 		}
 		
 		return userDtls;

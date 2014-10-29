@@ -1,6 +1,7 @@
 package asu.bank.utility;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +19,14 @@ public class SurakshitExceptionHandler {
 		ModelAndView model =  new ModelAndView("Homepage/exception");
 		
 		model.addObject("errMsg", suExp.getErrorCode());
+		
+		return model;
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ModelAndView handleAccessDeniedException(AccessDeniedException exp)
+	{
+		ModelAndView model =  new ModelAndView("login/accessDenied");
 		
 		return model;
 	}

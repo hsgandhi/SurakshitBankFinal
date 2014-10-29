@@ -16,6 +16,8 @@ public class SurakshitException extends RuntimeException {
 		if(errorMap.isEmpty())
 		{
 			errorMap.put("LowBalance", "The balance is not sufficient");
+			errorMap.put("ok", "ok");
+			errorMap.put("CaptchaException", "CaptchaException");
 		}
 	}
 	

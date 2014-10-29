@@ -16,7 +16,7 @@
 		<intercept-url pattern="/merchant*" access="hasRole('MERCHANT')"/>
 		
 		<form-login 
-			authentication-failure-url="/loginfailed" 
+			authentication-failure-handler-ref="SurakshitAuthFailurehandler"
 			authentication-success-handler-ref="SurakshitAuthSuccessHandler"/>
 	
 		<session-management invalid-session-url="/index.jsp">
@@ -29,11 +29,14 @@
 	<beans:bean id="SurakshitAuthSuccessHandler"
 		class="asu.bank.security.service.SurakshitAuthenticationSuccessHandler" />
 	
+	<beans:bean id="SurakshitAuthFailurehandler"
+		class="asu.bank.security.service.SurakshitAuthenticationFailureHandler" />
+	
 		
 	<beans:bean name="authenticationService"
 		class="asu.bank.security.service.AuthenticationService" />
 	
-	<authentication-manager>
+	<authentication-manager >
 		<authentication-provider user-service-ref="authenticationService" >
 			<password-encoder hash="bcrypt" />    
 		</authentication-provider>
