@@ -16,6 +16,7 @@
 		<intercept-url pattern="/merchant*" access="hasRole('MERCHANT')"/>
 		
 		<form-login 
+			login-page="/login"
 			authentication-failure-handler-ref="SurakshitAuthFailurehandler"
 			authentication-success-handler-ref="SurakshitAuthSuccessHandler"/>
 	
@@ -23,7 +24,8 @@
 			<concurrency-control expired-url="/index.jsp"/>
 		</session-management>
 		
-		<logout logout-success-url="/index.jsp" />
+		<!-- <logout logout-success-url="/index.jsp" success-handler-ref="SurakshitLogoutSuccessHandler" delete-cookies="JSESSIONID" /> -->
+		<logout success-handler-ref="SurakshitLogoutSuccessHandler" delete-cookies="JSESSIONID" />
 	</http>
 
 	<beans:bean id="SurakshitAuthSuccessHandler"
@@ -31,6 +33,9 @@
 	
 	<beans:bean id="SurakshitAuthFailurehandler"
 		class="asu.bank.security.service.SurakshitAuthenticationFailureHandler" />
+	
+	<beans:bean id="SurakshitLogoutSuccessHandler"
+		class="asu.bank.security.service.SurakshitLogoutSuccessHandler" />
 	
 		
 	<beans:bean name="authenticationService"

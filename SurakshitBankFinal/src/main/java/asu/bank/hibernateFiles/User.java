@@ -35,6 +35,8 @@ public class User implements java.io.Serializable {
 	private String role;
 	private String isAccountLocked;
 	//private Merchant merchant;
+	private String isAccountEnabled;
+	private Set<UserAttempts> userAttemptses = new HashSet(0);
 	private Set<Operation> operations = new HashSet(0);
 	private Set<Account> accounts = new HashSet(0);
 	private Customer customer;
@@ -45,7 +47,7 @@ public class User implements java.io.Serializable {
 	}
 
 	public User(String name, String address, String emailId, long phoneNumber,
-			String documentId, String password , String isAccountLocked) {
+			String documentId, String password , String isAccountLocked, String isAccountEnabled) {
 		this.name = name;
 		this.address = address;
 		this.emailId = emailId;
@@ -53,13 +55,16 @@ public class User implements java.io.Serializable {
 		this.documentId = documentId;
 		this.password = password;
 		this.isAccountLocked = isAccountLocked;
+		this.isAccountEnabled = isAccountEnabled;
 	}
 
 	public User(String name, String address, String emailId, long phoneNumber,
 			String documentId, String password, String role,
 			//Merchant merchant,
 			String isAccountLocked,
+			 String isAccountEnabled,
 			Set<Account> accounts ,
+			Set<UserAttempts> userAttemptses,
 			Set<Operation> operations, Customer customer, Set<Transaction> transactionsForPrimaryParty,
 			Set<Transaction> transactionsForSecondaryParty) {
 		this.name = name;
@@ -71,7 +76,9 @@ public class User implements java.io.Serializable {
 		this.role = role;
 		//this.merchant = merchant;
 		this.isAccountLocked= isAccountLocked;
+		this.isAccountEnabled = isAccountEnabled;
 		this.accounts=accounts;
+		this.userAttemptses= userAttemptses;
 		this.operations = operations;
 		this.customer = customer;
 		this.transactionsForPrimaryParty = transactionsForPrimaryParty;
@@ -171,6 +178,15 @@ public class User implements java.io.Serializable {
 		this.isAccountLocked = isAccountLocked;
 	}
 	
+	@Column(name = "IsAccountEnabled", nullable = false, length = 1)
+	public String getIsAccountEnabled() {
+		return this.isAccountEnabled;
+	}
+
+	public void setIsAccountEnabled(String isAccountEnabled) {
+		this.isAccountEnabled = isAccountEnabled;
+	}
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
 	public Set<Account> getAccounts() {
 		return this.accounts;
@@ -178,6 +194,15 @@ public class User implements java.io.Serializable {
 
 	public void setAccounts(Set<Account> accounts) {
 		this.accounts = accounts;
+	}
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+	public Set<UserAttempts> getUserAttemptses() {
+		return this.userAttemptses;
+	}
+
+	public void setUserAttemptses(Set<UserAttempts> userAttemptses) {
+		this.userAttemptses = userAttemptses;
 	}
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")

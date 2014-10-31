@@ -18,6 +18,11 @@ public class SurakshitException extends RuntimeException {
 			errorMap.put("LowBalance", "The balance is not sufficient");
 			errorMap.put("ok", "ok");
 			errorMap.put("CaptchaException", "CaptchaException");
+			errorMap.put("InvalidUserNameOrPassword", "Invalid user name or password. Please try again");
+			errorMap.put("UserNotFound", "No such user exists.");
+			errorMap.put("EnterPassword", "Please enter proper password");
+			errorMap.put("EnterOTP", "Please enter proper OTP");
+			errorMap.put("NoAccountAvailable", "There is no account for this user.");
 		}
 	}
 	

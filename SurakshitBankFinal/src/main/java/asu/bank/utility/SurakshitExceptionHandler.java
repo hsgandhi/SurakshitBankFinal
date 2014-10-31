@@ -2,11 +2,11 @@ package asu.bank.utility;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
-
-import asu.bank.login.controller.LoginController;
 
 @ControllerAdvice
 public class SurakshitExceptionHandler {
@@ -31,6 +31,15 @@ public class SurakshitExceptionHandler {
 		return model;
 	}
 	
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ModelAndView handleRequestMethodNotSupportedExceptions(HttpRequestMethodNotSupportedException exp)
+	{
+		ModelAndView model =  new ModelAndView("login/accessDenied");
+		logger.error(exp.getMessage());
+		exp.printStackTrace();
+		
+		return model;
+	}
 	
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleOtherExceptions(Exception exp)
@@ -43,4 +52,14 @@ public class SurakshitExceptionHandler {
 		
 		return model;
 	}
+	
+	private boolean isUserSessionExists()
+	{
+		if(SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser"))
+			return false;
+		else
+			return true;
+	}
+	
+	
 }

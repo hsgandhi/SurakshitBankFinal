@@ -6,6 +6,6 @@
 </sec:authorize>
 <br/>
 
-${errMsg}
+${successMessage}
 <tags:commonJs></tags:commonJs>	
 

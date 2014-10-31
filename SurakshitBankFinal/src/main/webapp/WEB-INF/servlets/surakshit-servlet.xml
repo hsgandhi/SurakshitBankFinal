@@ -88,5 +88,23 @@
 	<bean id='recaptcha' class='net.tanesha.recaptcha.ReCaptchaImpl'>
  		<property name='privateKey' value='6LeFvfwSAAAAANnvC0Gxyq-WAIy6Sw7Sods8DACC'></property>
 	</bean>
-
+	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+	<property name="host" value="smtp.gmail.com" />
+	<property name="port" value="587" />
+	<property name="username" value="surakshitbank@gmail.com" />
+	<property name="password" value="Group7bank" />
+ 
+	<property name="javaMailProperties">
+	   <props>
+	   		  <prop key="mail.transport.protocol">smtp</prop>
+       	      <prop key="mail.smtp.auth">true</prop>
+       	      <prop key="mail.smtp.starttls.enable">true</prop>
+       	      <prop key="mail.debug">false</prop>
+       	      <prop key="mail.smtp.user">surakshitbank@gmail.com</prop>
+       	      <prop key="mail.smtp.password">Group7bank</prop>
+       	   </props>
+	</property>
+</bean>
+ 
 </beans>

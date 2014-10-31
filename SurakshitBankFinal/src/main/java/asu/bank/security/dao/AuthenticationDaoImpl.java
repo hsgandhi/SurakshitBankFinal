@@ -28,18 +28,17 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 		UserDtls userDtls = new UserDtls();
 		List<SimpleGrantedAuthority> authorities;
 		
-		List<User> userList = (List<User>)hibernateUtility.getSession().createQuery("FROM User where emailId= :Email")
-					.setParameter("Email", emailId).list();
+		User user = (User)hibernateUtility.getSession().createQuery("FROM User where emailId= :Email")
+					.setParameter("Email", emailId).uniqueResult();
 		
 		/*List<User> userList = (List<User>)hibernateUtility.getSession().createCriteria(User.class)
 								.add(Restrictions.eq("name", userName))
 								.list();*/
 		
-		if(userList.isEmpty())
+		if(user== null)
 			throw new BadCredentialsException("User Name or password not found");
 		else
 		{
-			User user =userList.get(0); 
 			authorities = new ArrayList<SimpleGrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority(user.getRole()));
 			

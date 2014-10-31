@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import net.tanesha.recaptcha.ReCaptcha;
@@ -12,6 +13,7 @@ import net.tanesha.recaptcha.ReCaptchaResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -29,6 +31,8 @@ import asu.bank.login.service.LoginService;
 import asu.bank.login.validator.LoginValidator;
 import asu.bank.login.viewBeans.MenuBean;
 import asu.bank.login.viewBeans.TrialBean;
+import asu.bank.utility.EmailUtilityUsingSSL;
+import asu.bank.utility.OneTimePasswordGenerator;
 import asu.bank.utility.SurakshitException;
 
 
@@ -42,18 +46,25 @@ public class LoginController {
 	 LoginValidator loginValidator;
 	 
 	 @Autowired
-		ReCaptcha reCaptcha;
+	 ReCaptcha reCaptcha;
+	 
+	 @Autowired
+	 EmailUtilityUsingSSL emailUtilityUsingSSL;
+	 
+	 @Autowired
+	 OneTimePasswordGenerator oneTimePasswordGenerator;
 	 
 	 private static final Logger logger = Logger.getLogger(LoginController.class);
 
-	@RequestMapping(value="/login", method = RequestMethod.GET)
+	@RequestMapping(value="/login", method = RequestMethod.POST)
 	public String login(HttpServletRequest request,ModelMap model) {
+		System.out.println("I am here");
 		return "login/login";
  
 	}
 	
 	@RequestMapping(value="/testCaptcha", method = RequestMethod.POST)
-	public void testCaptcha(HttpServletRequest request,HttpServletResponse response,ModelMap model)throws Exception {
+	public String testCaptcha(HttpServletRequest request,HttpServletResponse response,ModelMap model)throws SurakshitException, Exception {
 		
 		String remoteAddress = request.getRemoteAddr();
 		String challangeField = request.getParameter("recaptcha_challenge_field");
@@ -62,14 +73,60 @@ public class LoginController {
 		ReCaptchaResponse reCaptchaResponse = this.reCaptcha.checkAnswer(remoteAddress, challangeField, responseField);
 
 		 if(reCaptchaResponse.isValid()) {
-			 throw new SurakshitException("ok");
+			 model.addAttribute("errMsg", "ok");
 		 } else {
-			 throw new SurakshitException("CaptchaException"); 
+			 model.addAttribute("errMsg", "CaptchaException");
 		 }
+		 return "Homepage/nilFragment";
 	}
 	
+	@RequestMapping(value="/forgotPassword", method = RequestMethod.POST)
+	public String forgotPassword(HttpServletRequest request,ModelMap model)throws SurakshitException, Exception {
+		
+		String emailID=request.getParameter("j_username");
+		
+		
+		if(emailID.equals(""))
+			throw new SurakshitException("UserNotFound");
+		
+		boolean userExists=loginService.checkIfUserExists(emailID);
+		
+		if(!userExists)
+			throw new SurakshitException("UserNotFound");
+		
+		String otp = oneTimePasswordGenerator.getOneTimePassword();
+		HttpSession sesssion = request.getSession();
+		sesssion.setAttribute("oneTimePass", otp);
+		sesssion.setAttribute("emailId", emailID);
+		
+		emailUtilityUsingSSL.sendMail(emailID,otp);
+		
+		return("login/enterOTP");
+	}
+	
+	@RequestMapping(value="/checkOTP", method = RequestMethod.POST)
+	public String checkOTP(HttpServletRequest request,ModelMap model)throws SurakshitException, Exception {
+		HttpSession sesssion = request.getSession();
+		
+		String emailID=sesssion.getAttribute("emailId").toString();
+		String otp = sesssion.getAttribute("oneTimePass").toString();
+		String password = request.getParameter("newPassword");
+		String userOtp = request.getParameter("otp");
+		
+		if(password.equals("") || password.length()<8)
+			throw new SurakshitException("EnterPassword");
+		if(userOtp.equals("") || otp.length()<8)
+			throw new SurakshitException("EnterOTP");
+		
+		if(userOtp.equals(otp))
+			loginService.changePassword(password, emailID);
+		
+		return("index.jsp");
+	}
+	
+	
 	@RequestMapping(value="/adminTrialSubmit", method = RequestMethod.POST)
-	public String showHomePage(@ModelAttribute("trialBean")@Valid TrialBean trialBean, BindingResult result, ModelMap model) throws SurakshitException, Exception
+	public String showHomePage(@ModelAttribute("trialBean")@Valid TrialBean trialBean, BindingResult result, ModelMap model, HttpServletRequest request) throws SurakshitException, Exception
 	{
 		
 		//loginService.testRoom("hsgandhi@asu.edu", "hi", "hi");
@@ -100,10 +157,10 @@ public class LoginController {
 	}
 
 	@RequestMapping(value="/loginfailed", method = RequestMethod.GET)
-	public String loadFrames(ModelMap model, HttpServletRequest request) {
+	public String loginFailed(ModelMap model, HttpServletRequest request) {
 		System.out.println("in login failed");
 		
-		Exception exception = 
+		/*Exception exception = 
                 (Exception) request.getSession().getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
 
 		String error = "";
@@ -113,10 +170,13 @@ public class LoginController {
 			error = exception.getMessage();
 		}else{
 			error = "Invalid username and password!";
-		}
+		}*/
+		
+		throw new SurakshitException("InvalidUserNameOrPassword");
+		
 
-		model.addAttribute("errorDisplay", error);
-		return "login/login";
+		//model.addAttribute("errorDisplay", error);
+		//return "login/login";
 	}
 	
 	@RequestMapping(value="/goToHomePage", method = RequestMethod.POST)
@@ -129,10 +189,11 @@ public class LoginController {
 		return "Homepage/homepage";
 	}
 	
-	@RequestMapping(value="getMenuDetails", method= RequestMethod.GET)
+	@RequestMapping(value="/getMenuDetails", method= RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','EMPLOYEE','MERCHANT')")
 	public String getMenuDtls(ModelMap model)
 	{
+		 
 		List<MenuBean> menuBeanList = new ArrayList<MenuBean>();
 		String role=null;
 		UserDetails userDetails =
@@ -157,7 +218,7 @@ public class LoginController {
 		 }
 		 else if("CUSTOMER".equalsIgnoreCase(role))
 		 {
-			 
+			 menuBeanList.add(getPopulatedMenuBean("Credit Balance","customerCreditBalance"));
 		 }
 		 else if("MERCHANT".equalsIgnoreCase(role))
 		 {
@@ -179,6 +240,9 @@ public class LoginController {
 
 	@RequestMapping(value="/accessDenied")
 	public String accessDeniedPage(ModelMap model) {
+		System.out.println("I am here");
+		UserDetails userDetails =
+				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return "login/accessDenied";
 	}
 	
@@ -189,12 +253,14 @@ public class LoginController {
 	}
 	
 	
-	@RequestMapping(value="/adminTrial")
+	@RequestMapping(value="/adminTrial", method=RequestMethod.POST)
 	public String viewTrialPage(ModelMap model) {
 	
 		TrialBean trialBean = new TrialBean();
 		model.addAttribute("trialBean",trialBean);
 		return "Homepage/trial";
 	}
+	
+	
 	
 }

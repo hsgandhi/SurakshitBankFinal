@@ -18,7 +18,7 @@
       		<tr>
       			<td>Name</td>
       			<td> 
-      			<form:input path="name" id="nameInput"></form:input>
+      			<form:input path="name" id="nameInput" ></form:input>
     			<form:errors path="name" cssclass="error"></form:errors></td>
       		</tr>
       		<tr>
