@@ -51,7 +51,7 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			userDtls.setPassword(hashedPassword);
 			userDtls.setAuthorities(authorities);
 			
-			userDtls.setEnabled(true);
+			userDtls.setEnabled(user.getIsAccountEnabled().equals("0")?false:true);
 			userDtls.setAccountNonLocked(user.getIsAccountLocked().equals("0")?true:false);
 		}
 		

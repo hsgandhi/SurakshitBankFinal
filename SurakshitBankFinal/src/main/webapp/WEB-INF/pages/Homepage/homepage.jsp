@@ -15,6 +15,8 @@
 
 <form name="remotingForm" id="IdRemotingForm" target="menuFrame" method="post" action="getMenuDetails">
 </form>
+<form name="remotingForm1" target="bodyContent" method="post" action="dummyFragment">
+</form>
 
 <security:authorize access="hasAnyRole('ADMIN', 'CUSTOMER','EMPLOYEE','MERCHANT')">
 	<iframe name="menuFrame" width="100%" height="20%" ></iframe>
@@ -25,6 +27,7 @@
 
 <script type="text/javascript">
 document.remotingForm.submit();
+document.remotingForm1.submit();
 </script>
 
 

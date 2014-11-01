@@ -10,6 +10,7 @@
 		<intercept-url pattern="/index*" access="permitAll"/>
 		<intercept-url pattern="/login" access="permitAll"/>
 		<intercept-url pattern="/login*" access="permitAll"/>
+		<intercept-url pattern="/logout*" access="permitAll"/>
 		<intercept-url pattern="/employee*" access="hasRole('EMPLOYEE')"/>
 		<intercept-url pattern="/admin*" access="hasRole('ADMIN')"/>
 		<intercept-url pattern="/customer*" access="hasRole('CUSTOMER')"/>
@@ -24,8 +25,13 @@
 			<concurrency-control expired-url="/index.jsp"/>
 		</session-management>
 		
-		<!-- <logout logout-success-url="/index.jsp" success-handler-ref="SurakshitLogoutSuccessHandler" delete-cookies="JSESSIONID" /> -->
-		<logout success-handler-ref="SurakshitLogoutSuccessHandler" delete-cookies="JSESSIONID" />
+		<!-- <logout logout-success-url="/logout.jsp" delete-cookies="JSESSIONID" /> -->
+		<logout  success-handler-ref="SurakshitLogoutSuccessHandler" delete-cookies="JSESSIONID" />
+		
+		<headers>
+			<cache-control></cache-control>
+			<hsts/>
+		</headers>
 	</http>
 
 	<beans:bean id="SurakshitAuthSuccessHandler"

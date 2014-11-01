@@ -1,8 +1,10 @@
 package asu.bank.login.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,10 +15,7 @@ import net.tanesha.recaptcha.ReCaptchaResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -155,28 +154,24 @@ public class LoginController {
 		 
 		return "login/login";
 	}
-
+/*
 	@RequestMapping(value="/loginfailed", method = RequestMethod.GET)
 	public String loginFailed(ModelMap model, HttpServletRequest request) {
 		System.out.println("in login failed");
 		
-		/*Exception exception = 
-                (Exception) request.getSession().getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
-
-		String error = "";
-		if (exception instanceof BadCredentialsException) {
-			error = "Invalid username and password!";
-		}else if(exception instanceof LockedException) {
-			error = exception.getMessage();
-		}else{
-			error = "Invalid username and password!";
-		}*/
-		
 		throw new SurakshitException("InvalidUserNameOrPassword");
-		
-
-		//model.addAttribute("errorDisplay", error);
-		//return "login/login";
+	}
+	*/
+	
+	@RequestMapping(value="/loginfailedPost", method = RequestMethod.POST)
+	public String loginfailedPost(ModelMap model, HttpServletRequest request) {
+		String error = "InvalidUserNameOrPassword";
+		throw new SurakshitException(error);
+	}
+	
+	@RequestMapping(value="/accountLockPost", method = RequestMethod.POST)
+	public String accountLockPost(ModelMap model) {
+		throw new SurakshitException("AccountLocked");
 	}
 	
 	@RequestMapping(value="/goToHomePage", method = RequestMethod.POST)
@@ -240,13 +235,10 @@ public class LoginController {
 
 	@RequestMapping(value="/accessDenied")
 	public String accessDeniedPage(ModelMap model) {
-		System.out.println("I am here");
-		UserDetails userDetails =
-				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return "login/accessDenied";
 	}
 	
-	@RequestMapping(value="/dummyFragment")
+	@RequestMapping(value="/dummyFragment", method= RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','EMPLOYEE','MERCHANT')")
 	public String loadDummyFragment(){
 	return "Homepage/dummyFragment";
@@ -261,6 +253,32 @@ public class LoginController {
 		return "Homepage/trial";
 	}
 	
+	@RequestMapping(value="/handleAllException", method=RequestMethod.POST)
+	public void handleAllException(ModelMap model) throws Exception {
+		throw new Exception("Some problem occured. Please try again.");
+	}
 	
+	@RequestMapping(value="/finalLogOut", method=RequestMethod.GET)
+	public String finalLogOut(HttpServletRequest request,
+			HttpServletResponse response,ModelMap model) throws Exception {
+		/*
+		response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");// HTTP 1.1.
+        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+        response.setHeader("Expires", "Fri, 17 Mar 2010 06:00:00 GMT");
+        response.setHeader("Last-Modified", new Date().toString());
+        response.setHeader("Pragma", "no-cache");
+        
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setPath(request.getContextPath());
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        */
+		return "Logout/logout";
+	}
+	
+	@RequestMapping(value="/logout", method=RequestMethod.GET)
+	public String logout(ModelMap model) throws Exception {
+		return "Logout/finalLogout";
+	}
 	
 }

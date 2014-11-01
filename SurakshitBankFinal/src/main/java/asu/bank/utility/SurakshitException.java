@@ -23,6 +23,7 @@ public class SurakshitException extends RuntimeException {
 			errorMap.put("EnterPassword", "Please enter proper password");
 			errorMap.put("EnterOTP", "Please enter proper OTP");
 			errorMap.put("NoAccountAvailable", "There is no account for this user.");
+			errorMap.put("AccountLocked", "User account is locked. Contact system admin.");
 		}
 	}
 	
