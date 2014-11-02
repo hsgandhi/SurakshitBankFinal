@@ -2,13 +2,17 @@ package asu.bank.hibernateFiles;
 
 // Generated Oct 24, 2014 12:58:34 AM by Hibernate Tools 3.4.0.CR1
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+
 import static javax.persistence.GenerationType.IDENTITY;
+
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -28,29 +32,33 @@ public class Transaction implements java.io.Serializable {
 	private String transactionType;
 	private String transactionCurrentStatus;
 	private Double transactionAmount;
+	private Date transactionCreatedAt;
 	private Set<Transactionsstatus> transactionsstatuses = new HashSet(0);
 
 	public Transaction() {
 	}
 
 	public Transaction(User userByPrimaryParty, User userBySecondaryParty,
-			String transactionType, String transactionCurrentStatus) {
+			String transactionType, String transactionCurrentStatus, Date transactionCreatedAt) {
 		this.userByPrimaryParty = userByPrimaryParty;
 		this.userBySecondaryParty = userBySecondaryParty;
 		this.transactionType = transactionType;
 		this.transactionCurrentStatus = transactionCurrentStatus;
+		this.transactionCreatedAt = transactionCreatedAt;
 	}
 
 	public Transaction(User userByPrimaryParty, User userBySecondaryParty,
 			String transactionType, String transactionCurrentStatus,
-			Double transactionAmount, Set<Transactionsstatus> transactionsstatuses) {
+			Double transactionAmount,Date transactionCreatedAt, Set<Transactionsstatus> transactionsstatuses) {
 		this.userByPrimaryParty = userByPrimaryParty;
 		this.userBySecondaryParty = userBySecondaryParty;
 		this.transactionType = transactionType;
 		this.transactionCurrentStatus = transactionCurrentStatus;
 		this.transactionAmount = transactionAmount;
+		this.transactionCreatedAt = transactionCreatedAt;
 		this.transactionsstatuses = transactionsstatuses;
 	}
+	
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -108,6 +116,15 @@ public class Transaction implements java.io.Serializable {
 
 	public void setTransactionAmount(Double transactionAmount) {
 		this.transactionAmount = transactionAmount;
+	}
+	
+	@Column(name = "TransactionCreatedAt", nullable = false, length = 0)
+	public Date getTransactionCreatedAt() {
+		return transactionCreatedAt;
+	}
+
+	public void setTransactionCreatedAt(Date transactionCreatedAt) {
+		this.transactionCreatedAt = transactionCreatedAt;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "transaction")

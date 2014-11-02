@@ -207,7 +207,12 @@ public class LoginController {
 		 }
 		 else if("EMPLOYEE".equalsIgnoreCase(role))
 		 {
-			 
+			 menuBeanList.add(getPopulatedMenuBean("My Profile","employeeMyProfile"));
+			 menuBeanList.add(getPopulatedMenuBean("Approve Transactions","employeeGetPendingTransactions"));
+			 menuBeanList.add(getPopulatedMenuBean("Create a Transaction","employeeGetTransactionDetails"));
+			 menuBeanList.add(getPopulatedMenuBean("View a Transaction","employeeViewTransaction"));
+			 menuBeanList.add(getPopulatedMenuBean("Modify a Transaction","employeeModifyTransaction"));
+			 menuBeanList.add(getPopulatedMenuBean("Delete a Transaction","employeeDeleteTransaction"));
 		 }
 		 else if("CUSTOMER".equalsIgnoreCase(role))
 		 {
