@@ -186,13 +186,22 @@
 			<version>${log4j-version}</version>
 		</dependency>
 	
-	<!-- Log4j starts -->
+	<!-- Log4j ends -->
 	
+	<!-- Captcha starts -->
+	
+	<!-- <dependency>
+	<groupId>net.tanesha.recaptcha4j</groupId>
+	<artifactId>recaptcha4j</artifactId>
+	<version>0.0.8</version>
+	</dependency> -->
 	<dependency>
 	<groupId>net.tanesha.recaptcha4j</groupId>
 	<artifactId>recaptcha4j</artifactId>
 	<version>0.0.7</version>
 	</dependency>
+	
+	<!-- Captcha ends -->
 	
 	<dependency>
 	<groupId>javax.mail</groupId>

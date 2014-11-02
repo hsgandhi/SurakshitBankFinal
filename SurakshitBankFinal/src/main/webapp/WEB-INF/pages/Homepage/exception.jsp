@@ -11,7 +11,10 @@
 
 <br/>
 <br/>
-
+<center>
+<img src="${pageContext.request.contextPath}/resources/images/exception.png" height="100" width="100"/>
+<br/>
 ${errMsg}
+</center>
 <tags:commonJs></tags:commonJs>	
 

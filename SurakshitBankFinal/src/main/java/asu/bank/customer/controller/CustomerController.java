@@ -5,6 +5,8 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -41,6 +43,7 @@ public class CustomerController {
 		
 		AccountViewBean accountViewBean = new AccountViewBean();
 		accountViewBean.setAccountId(accountNo);
+		//accountViewBean.setEmailId("<script>alert('hi');</script>");
 		
 		model.addAttribute("accountViewBean", accountViewBean);
 		
@@ -77,4 +80,5 @@ public class CustomerController {
 		
 		return "Homepage/success";
 	}
+	
 }

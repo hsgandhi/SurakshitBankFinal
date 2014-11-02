@@ -15,6 +15,11 @@
 </c:if>
 <br/>
 <br/>
- You are not authorized to view these details.
+<center>
+<img src="${pageContext.request.contextPath}/resources/images/accessDenied.jpg" height="100" width="100"/>
+<br/>
+You are not authorized to view these details.
+</center>
+ 
  
 <tags:commonJs></tags:commonJs>

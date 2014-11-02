@@ -59,5 +59,10 @@
         <error-code>404</error-code>
         <location>/WEB-INF/pages/Homepage/404.jsp</location>
     </error-page>
+    
+    <context-param>
+   		<param-name>defaultHtmlEscape</param-name>
+   		<param-value>true</param-value>
+	</context-param>
   
 </web-app>

@@ -1,10 +1,8 @@
 package asu.bank.login.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -111,8 +109,9 @@ public class LoginController {
 		String otp = sesssion.getAttribute("oneTimePass").toString();
 		String password = request.getParameter("newPassword");
 		String userOtp = request.getParameter("otp");
+		String regex = "";
 		
-		if(password.equals("") || password.length()<8)
+		if(password.equals("") || password.length()<8 )//|| !password.matches(regex))
 			throw new SurakshitException("EnterPassword");
 		if(userOtp.equals("") || otp.length()<8)
 			throw new SurakshitException("EnterOTP");
@@ -188,7 +187,6 @@ public class LoginController {
 	@PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','EMPLOYEE','MERCHANT')")
 	public String getMenuDtls(ModelMap model)
 	{
-		 
 		List<MenuBean> menuBeanList = new ArrayList<MenuBean>();
 		String role=null;
 		UserDetails userDetails =

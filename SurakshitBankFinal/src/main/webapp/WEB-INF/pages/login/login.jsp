@@ -5,8 +5,15 @@
 
 <html>
 <head>
-<title>Insert title here</title>
+<tags:commonJs />
+<link href="http://code.jquery.com/ui/1.10.3/themes/ui-darkness/jquery-ui.css" rel="stylesheet">
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
 
+<link href="${pageContext.request.contextPath}/resources/css/keyboard.css" rel="stylesheet">
+	<script src="${pageContext.request.contextPath}/resources/js/jquery.keyboard.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/jquery.keyboard.extension-all.js"></script>
+	
+	
 <style>
 	.linkButton {
     background:none!important;
@@ -20,6 +27,7 @@
 
 </head>
 <body>
+<center>
 <c:if test="${not empty errorDisplay}">
 		<div class="error">
 		<font color="red">
@@ -29,24 +37,39 @@
 	</c:if>
 	
 	
+<img src="${pageContext.request.contextPath}/resources/images/bank.jpg" height="100" width="200"/>
+<br/>
+<br/>
+	
 	<form method="POST" name="loginFormName" id="loginFormName">
         <label for="username">User Name:</label>
         <input id="username" name="j_username" type="text" value=""/><br/><br/>
+        <div class="block">
         <label for="password">Password:</label>
-        <input id="password" name="j_password" type="password"/><br/><br/>
+        <input id="password" name="j_password" type="password" class="qwerty"/>&nbsp;&nbsp;&nbsp;
+        <img id="passwd" class="tooltip" title="Click to open the virtual keyboard" src="${pageContext.request.contextPath}/resources/images/keyboard.png">
+        <div class="code ui-corner-all"></div>
+        </div>
+        <br/>
+        <br/>
 		<tags:captcha privateKey="6Le FvfwSAAAAANnvC0Gxyq-WAIy6Sw7Sods8DACC" publicKey="6LeFvfwSAAAAAL5pSPXSuMGysfYwS8Mlqz1PLgUR"></tags:captcha>
 		<br/>
 		
         <input type="button" value="Log in" onclick="login()">
-        <br/>
-        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="button" value="Forget Password" onclick="goToForgetPassword();" class="linkButton">
       </form>
       
+      			<h2>Important instruction:</h2>
+      			<br>
+      			1) Do not use back button or refresh button in the application.
+      			2) The account will be locked if the 5 continuous login attempts fails.
+      			3) If your account gets locked, contact the system admin by emailing surakshitbank@gmail.com
+      			
+ </center>
 </body>
 
 </html>
-<tags:commonJs />
 <script type="text/javascript">
 	function goToForgetPassword()
 	{
@@ -88,6 +111,15 @@
   	  	    }
   	  	});
   	}
-  	window.opener.close();
+  	$('.qwerty') 
+  	 .keyboard({  
+  	  openOn : null, 
+  	  stayOpen : true, 
+  	  layout : 'qwerty' 
+  	 }).addTyping(); 
+  	$('#passwd').click(function(){ 
+  	 $('.qwerty').getkeyboard().reveal(); 
+  	});
+  	//window.opener.close();
 </script>      
  

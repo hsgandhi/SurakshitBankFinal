@@ -7,10 +7,15 @@
 <tags:commonJs />
 </head>
 <body id="bodyOfApp">
-<div align="right">
+<div>
+<span style="float:left;">
+<img src="${pageContext.request.contextPath}/resources/images/bank.jpg" height="100" width="200"/>
+</span>
+<span style="float: right;">
 	Welcome <security:authentication property="principal.username" /> 
 	<br/>
 	<a href="<c:url value="j_spring_security_logout" />" align="right"> Logout</a>
+</span>	
 </div>
 
 <form name="remotingForm" id="IdRemotingForm" target="menuFrame" method="post" action="getMenuDetails">

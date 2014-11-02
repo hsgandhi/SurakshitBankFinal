@@ -1,15 +1,11 @@
 package asu.bank.security.service;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.tanesha.recaptcha.ReCaptcha;
-
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import asu.bank.hibernateFiles.UserAttempts;
 import asu.bank.utility.HibernateUtility;
-import asu.bank.utility.UserDataUtility;
 
 @Repository
 @Transactional(propagation=Propagation.REQUIRED,rollbackFor={Exception.class})

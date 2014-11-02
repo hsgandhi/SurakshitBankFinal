@@ -3,8 +3,9 @@
 <%@ taglib prefix='tags' tagdir='/WEB-INF/tags' %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<form:form name="addCreditForm" action="customerAddBalance" commandName="accountViewBean">
 
+<form:form name="addCreditForm" action="customerAddBalance" commandName="accountViewBean" >
+${accountViewBean.emailId}
 	<table>
 		<tr>
 			<td> Account number: </td>
@@ -12,7 +13,7 @@
 		</tr>
 		<tr>
 			<td>Please enter the amount</td>
-			<td><form:input path="currency" id="currencyId"/>
+			<td><form:input path="currency" id="currencyId" />
 				<form:errors path="currency"></form:errors></td>
 		</tr>
 		<tr>
