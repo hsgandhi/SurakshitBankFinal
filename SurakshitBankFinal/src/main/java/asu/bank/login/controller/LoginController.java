@@ -119,7 +119,9 @@ public class LoginController {
 		if(userOtp.equals(otp))
 			loginService.changePassword(password, emailID);
 		
-		return("index.jsp");
+		model.addAttribute("successMessage", "Password changed successfully");
+		
+		return("Homepage/success");
 	}
 	
 	

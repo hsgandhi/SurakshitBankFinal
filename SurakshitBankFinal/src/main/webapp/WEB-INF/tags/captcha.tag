@@ -5,8 +5,8 @@
 <%@ attribute name='publicKey' required='true' rtexprvalue='false' %>
 
 <%
-ReCaptcha c = ReCaptchaFactory.newReCaptcha(publicKey, privateKey, false);
-//ReCaptcha c = ReCaptchaFactory.newSecureReCaptcha(publicKey, privateKey, false);
-//((ReCaptchaImpl) c).setRecaptchaServer("https://www.google.com/recaptcha/api");
+//ReCaptcha c = ReCaptchaFactory.newReCaptcha(publicKey, privateKey, false);
+ReCaptcha c = ReCaptchaFactory.newSecureReCaptcha(publicKey, privateKey, false);
+((ReCaptchaImpl) c).setRecaptchaServer("https://www.google.com/recaptcha/api");
  out.print(c.createRecaptchaHtml(null, null));
 %>

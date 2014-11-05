@@ -1,14 +1,20 @@
 package asu.bank.utility;
 
+
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service("mailService")
 public class EmailUtilityUsingSSL {
 	 @Autowired
-	  private MailSender mailSender;
+	  private JavaMailSender mailSender;
+	 
+	 private final String PATH="D:\\lexer.jar";
 
 	
 	public void sendMail(String emailID, String otp) throws Exception
@@ -83,13 +89,54 @@ public class EmailUtilityUsingSSL {
 			throw new RuntimeException(e);
 		}
 		*/
+		
+		/*
 			SimpleMailMessage message = new SimpleMailMessage();
-	 
-			message.setFrom("surakshitbank@gmail.com");
-			message.setTo(emailID);
-			message.setSubject("Your one time password");
-			message.setText(otp);
-			mailSender.send(message);	
+		
+		message.setFrom("surakshitbank@gmail.com");
+		message.setTo(emailID);
+		message.setSubject("Your one time password");
+		message.setText(otp);
+		mailSender.send(message);
+	*/
+		
+		if(otp==null || otp.equals(""))
+			throw new Exception("No OTP Generated");
+		
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		 
+		helper.setFrom("surakshitbank@gmail.com");
+		helper.setTo(emailID);
+		helper.setSubject("Your one time password");
+		helper.setText(otp);
+		
+		//FileSystemResource file = new FileSystemResource(PATH);
+		//helper.addAttachment(file.getFilename(), file);
+		
+		mailSender.send(message);
+	}
+	
+	public void sendMailWithAttachment(String emailID, String msg, String subject) throws Exception
+	{
+		if(msg==null || msg.equals(""))
+			throw new Exception("No Text entered for mail");
+		
+		if(subject==null || subject.equals(""))
+			throw new Exception("No Subject entered for mail");
+		
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		 
+		helper.setFrom("surakshitbank@gmail.com");
+		helper.setTo(emailID);
+		helper.setSubject(subject);
+		helper.setText(msg);
+		
+		FileSystemResource file = new FileSystemResource(PATH);
+		helper.addAttachment(file.getFilename(), file);
+		
+		mailSender.send(message);
 	}
 	
 	}

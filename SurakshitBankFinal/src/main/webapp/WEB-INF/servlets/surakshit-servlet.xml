@@ -102,9 +102,11 @@
 	   		  <prop key="mail.transport.protocol">smtp</prop>
        	      <prop key="mail.smtp.auth">true</prop>
        	      <prop key="mail.smtp.starttls.enable">true</prop>
-       	      <prop key="mail.debug">false</prop>
+       	      <prop key="mail.debug">true</prop>
        	      <prop key="mail.smtp.user">surakshitbank@gmail.com</prop>
        	      <prop key="mail.smtp.password">Group7bank</prop>
+       	      <prop key="mail.smtps.ssl.checkserveridentity">true</prop>
+              <prop key="mail.smtps.ssl.trust">*</prop>
        	   </props>
 	</property>
 </bean>

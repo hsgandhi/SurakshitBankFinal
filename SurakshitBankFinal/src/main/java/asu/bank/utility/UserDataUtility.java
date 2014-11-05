@@ -22,7 +22,7 @@ public class UserDataUtility {
 		if(user!=null)
 			return user ;
 		else
-			throw new SurakshitException("User not found.");
+			throw new SurakshitException("UserNotFound");
 	}
 	
 	public String getAccountNo(String username) throws SurakshitException,

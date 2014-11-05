@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
@@ -8,10 +10,9 @@
 <tags:commonJs />
 <link href="http://code.jquery.com/ui/1.10.3/themes/ui-darkness/jquery-ui.css" rel="stylesheet">
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
-
 <link href="${pageContext.request.contextPath}/resources/css/keyboard.css" rel="stylesheet">
-	<script src="${pageContext.request.contextPath}/resources/js/jquery.keyboard.js"></script>
-	<script src="${pageContext.request.contextPath}/resources/js/jquery.keyboard.extension-all.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/jquery.keyboard.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/jquery.keyboard.extension-all.js"></script>
 	
 	
 <style>
@@ -61,9 +62,11 @@
       </form>
       
       			<h2>Important instruction:</h2>
-      			<br>
+      			<br/>
       			1) Do not use back button or refresh button in the application.
+      			<br/>
       			2) The account will be locked if the 5 continuous login attempts fails.
+      			<br/>
       			3) If your account gets locked, contact the system admin by emailing surakshitbank@gmail.com
       			
  </center>
@@ -120,6 +123,6 @@
   	$('#passwd').click(function(){ 
   	 $('.qwerty').getkeyboard().reveal(); 
   	});
-  	//window.opener.close();
+  	window.opener.close();
 </script>      
  

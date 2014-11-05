@@ -5,7 +5,11 @@
  <sec:authorize access="isAuthenticated()" var="authStatus">
 </sec:authorize>
 
-<c:if test="${not authStatus}">
+<sec:authorize access="isAnonymous()" var="anonymousStatus">
+</sec:authorize>
+
+
+<c:if test="${not authStatus  || not anonymousStatus}">
  <a href="index.jsp" >Go to home page</a>
 </c:if>
 
