@@ -45,6 +45,7 @@
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/surakshit_bank" />
         <property name="username" value="root" />
+        <!-- <property name="password" value="hayden116" /> -->
         <property name="password" value="gandhi" />
         <property name="initialSize" value="15" />
         <property name="maxActive" value="20" />
@@ -94,6 +95,7 @@
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 	<property name="host" value="smtp.gmail.com" />
 	<property name="port" value="587" />
+	<!-- <property name="port" value="465" /> -->
 	<property name="username" value="surakshitbank@gmail.com" />
 	<property name="password" value="Group7bank" />
  

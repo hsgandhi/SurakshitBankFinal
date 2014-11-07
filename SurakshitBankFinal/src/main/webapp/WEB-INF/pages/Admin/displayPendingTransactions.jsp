@@ -3,17 +3,17 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix='tags' tagdir='/WEB-INF/tags' %>
 	
-	
+This page	
         <table >
         	<c:forEach items="${PendingTransactionsList}" var="pendingTransaction">
-        	<form:form action="approveRejectTransaction" method="POST">
+        	<form:form action="adminapproveRejectTransaction" method="POST">
 				<tr>
-					<td><input type="hidden" name="ID" value="${pendingTransaction.getTransactionId()}"></td>
-					<td>${pendingTransaction.getTransactionType()}</td>
-					<td>${pendingTransaction.getTransactionAmount()}</td>
-					<td>${pendingTransaction.getUserByPrimaryParty().getUserId()}</td>
-					<td>${pendingTransaction.getUserBySecondaryParty().getUserId()}</td>
-					<td>${pendingTransaction.getTransactionCreatedAt()}</td>
+					<td><input type="hidden" name="ID" value="${pendingTransaction.transactionId}"></td>
+					<td><c:out value="${pendingTransaction.transactionType}"></c:out> </td>
+					<td><c:out value="${pendingTransaction.transactionAmount}"></c:out></td>
+					<td><c:out value="${pendingTransaction.primaryUserEmail}"></c:out></td>
+					<td><c:out value="${pendingTransaction.secondaryUserEmail}"></c:out></td>
+					<td><c:out value="${pendingTransaction.transactionCreatedAt}"></c:out></td>
 					<td><input type = "radio" name = "approveReject" id = "approveRejectSelection" value = "Approve" >Approve</td>
 					<td><input type = "radio" name = "approveReject" id = "approveRejectSelection" value = "Reject" >Reject</td>
 					<td><input type = "submit">

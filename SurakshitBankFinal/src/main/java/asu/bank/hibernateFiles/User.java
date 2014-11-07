@@ -29,13 +29,14 @@ public class User implements java.io.Serializable {
 	private String name;
 	private String address;
 	private String emailId;
-	private long phoneNumber;
+	private Double phoneNumber;
 	private String documentId;
 	private String password;
 	private String role;
 	private String isAccountLocked;
 	//private Merchant merchant;
 	private String isAccountEnabled;
+	private byte[] publicKey;
 	private Set<UserAttempts> userAttemptses = new HashSet(0);
 	private Set<Operation> operations = new HashSet(0);
 	private Set<Account> accounts = new HashSet(0);
@@ -46,7 +47,7 @@ public class User implements java.io.Serializable {
 	public User() {
 	}
 
-	public User(String name, String address, String emailId, long phoneNumber,
+	public User(String name, String address, String emailId, Double phoneNumber,
 			String documentId, String password , String isAccountLocked, String isAccountEnabled) {
 		this.name = name;
 		this.address = address;
@@ -58,7 +59,7 @@ public class User implements java.io.Serializable {
 		this.isAccountEnabled = isAccountEnabled;
 	}
 
-	public User(String name, String address, String emailId, long phoneNumber,
+	public User(String name, String address, String emailId, Double phoneNumber,
 			String documentId, String password, String role,
 			//Merchant merchant,
 			String isAccountLocked,
@@ -124,11 +125,11 @@ public class User implements java.io.Serializable {
 	}
 
 	@Column(name = "PhoneNumber", unique = true, nullable = false, precision = 10, scale = 0)
-	public long getPhoneNumber() {
+	public Double getPhoneNumber() {
 		return this.phoneNumber;
 	}
 
-	public void setPhoneNumber(long phoneNumber) {
+	public void setPhoneNumber(Double phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
 
@@ -190,6 +191,15 @@ public class User implements java.io.Serializable {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
 	public Set<Account> getAccounts() {
 		return this.accounts;
+	}
+	
+	@Column(name = "public_key")
+	public byte[] getPublicKey() {
+		return this.publicKey;
+	}
+
+	public void setPublicKey(byte[] publicKey) {
+		this.publicKey = publicKey;
 	}
 
 	public void setAccounts(Set<Account> accounts) {

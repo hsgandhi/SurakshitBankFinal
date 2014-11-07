@@ -1,11 +1,13 @@
 package asu.bank.login.service;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import asu.bank.login.dao.LoginDao;
+import asu.bank.login.dao.LoginDaoImpl;
 import asu.bank.utility.SurakshitException;
 
 @Service
@@ -15,13 +17,9 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	LoginDao loginDao;
 
-	@Override
-	public void testRoom(String name, String age, String sex)  throws SurakshitException,Exception{
-		System.out.println("in service");
-		loginDao.testRoom(name, age, sex);
-		//loginDao.testRoom("Hardikkjahsdfhaksdfhashfshffhashfkhfashfklhfahdfh", "17", "M");
-		//loginDao.testRoomReadOnly();
-	}
+	private static final Logger logger = Logger.getLogger(LoginServiceImpl.class);
+	 private static final Logger secureLogger = Logger.getLogger("secure");
+
 
 	@Override
 	public boolean checkIfUserExists(String emailID) throws SurakshitException,

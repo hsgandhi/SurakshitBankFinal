@@ -4,18 +4,22 @@
 <%@ taglib prefix='tags' tagdir='/WEB-INF/tags' %>	
 	
         
-        	<form:form action="createTransaction" method="POST" commandName="newTransactionBean">
-        		<form:label path="">Transaction Type</form:label>
-				<form:input path="transactionType" id="transactionType"/> <br />
+        	<form:form action="employeeCreateNewTransaction" commandName="newTransaction">
+        		<form:label path="">Transaction Type[DEBIT, CREDIT or PAYMENT]</form:label>
+				<form:input path="transactionType" id="transactionType"/> 
+				<form:errors path="transactionType"></form:errors><br />
 				
 				<form:label path="">Transaction Amount</form:label>
-				<form:input path="transactionAmount" id="transactionAmount"/> <br />
+				<form:input path="transactionAmount" id="transactionAmount"/> 
+				<form:errors path="transactionAmount"></form:errors><br />
 				
 				<form:label path="">Primary User EmailID</form:label>
-				<form:input path="primaryUserEmailID" id="primaryUserEmailID"/> <br />
+				<form:input path="primaryUserEmail" id="primaryUserEmailID"/> 
+				<form:errors path="primaryUserEmail"></form:errors><br />
 				
 				<form:label path="">Secondary User EmailID</form:label>
-				<form:input path="secondaryUserEmailID" id="secondaryUserEmailID"/> <br />
+				<form:input path="secondaryUserEmail" id="secondaryUserEmailID"/> 
+				<form:errors path="secondaryUserEmail"></form:errors><br />
 				
 				<form:button> Submit </form:button>
 			</form:form>

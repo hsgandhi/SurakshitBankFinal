@@ -8,11 +8,11 @@
 		</tr>
 		<tr>
 			<td>Enter new password:</td>
-			<td><input type="password" name="newPassword" /></td>
+			<td><input type="password" name="newPassword" maxlength="20"/></td>
 		</tr>
 		<tr>
 			<td>Enter the one time Password:</td>
-			<td><input type="text" name="otp" /></td>
+			<td><input type="text" name="otp" maxlength="8"/></td>
 		</tr>
 		<tr >
 			<td colspan="2"><input type="button" value="Submit" onclick="checkOTP();"/></td>

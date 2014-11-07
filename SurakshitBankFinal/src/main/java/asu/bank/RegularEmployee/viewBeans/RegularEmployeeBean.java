@@ -12,7 +12,7 @@ public class RegularEmployeeBean {
 	
 	private String emailID;
 		
-	private long phoneNumber;
+	private Double phoneNumber;
 		
 	private String documentID;
 		
@@ -36,10 +36,10 @@ public class RegularEmployeeBean {
 	public void setEmailID(String emailID) {
 		this.emailID = emailID;
 	}
-	public long getPhoneNumber() {
+	public Double getPhoneNumber() {
 		return phoneNumber;
 	}
-	public void setPhoneNumber(long phoneNumber) {
+	public void setPhoneNumber(Double phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
 	public String getDocumentID() {

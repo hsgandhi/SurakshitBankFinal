@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,11 +45,12 @@ public class AuthenticationDaoImpl implements AuthenticationDao {
 			
 			userDtls.setUsername(user.getEmailId());
 			
-			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-			String hashedPassword = passwordEncoder.encode(user.getPassword());
+			//BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+			//String hashedPassword = passwordEncoder.encode(user.getPassword());
+			//userDtls.setPassword(hashedPassword);
 			
-			//userDtls.setPassword(user.getPassword());
-			userDtls.setPassword(hashedPassword);
+			userDtls.setPassword(user.getPassword());
+			
 			userDtls.setAuthorities(authorities);
 			
 			userDtls.setEnabled(user.getIsAccountEnabled().equals("0")?false:true);

@@ -2,6 +2,8 @@ package asu.bank.customer.viewBeans;
 
 import javax.validation.constraints.DecimalMin;
 
+import javax.validation.constraints.Size;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class AccountViewBean {
@@ -9,9 +11,9 @@ public class AccountViewBean {
 	private String emailId;
 	private String accountId;
 	
-	@NotEmpty(message="Please enter the amount")
+	@NotEmpty(message="Please enter an amount to be credited")
 	@DecimalMin(value="0.01", message="Amount must be greater than zero")
-	//@Pattern
+	@Size(max=15)
 	private String currency;
 	public String getAccountId() {
 		return accountId;

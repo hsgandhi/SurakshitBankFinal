@@ -7,14 +7,14 @@
 		http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 	<http use-expressions="true" access-denied-page="/accessDenied" disable-url-rewriting="true">
-		<intercept-url pattern="/index*" access="permitAll"/>
-		<intercept-url pattern="/login" access="permitAll"/>
-		<intercept-url pattern="/login*" access="permitAll"/>
-		<intercept-url pattern="/logout*" access="permitAll"/>
-		<intercept-url pattern="/employee*" access="hasRole('EMPLOYEE')"/>
-		<intercept-url pattern="/admin*" access="hasRole('ADMIN')"/>
-		<intercept-url pattern="/customer*" access="hasRole('CUSTOMER')"/>
-		<intercept-url pattern="/merchant*" access="hasRole('MERCHANT')"/>
+		<intercept-url pattern="/index*" access="permitAll" requires-channel="https"/>
+		<intercept-url pattern="/login" access="permitAll" requires-channel="https"/>
+		<intercept-url pattern="/login*" access="permitAll" requires-channel="https"/>
+		<intercept-url pattern="/logout*" access="permitAll" requires-channel="https"/>
+		<intercept-url pattern="/employee*" access="hasRole('EMPLOYEE')" requires-channel="https"/>
+		<intercept-url pattern="/admin*" access="hasRole('ADMIN')" requires-channel="https"/>
+		<intercept-url pattern="/customer*" access="hasRole('CUSTOMER')" requires-channel="https"/>
+		<intercept-url pattern="/merchant*" access="hasRole('MERCHANT')" requires-channel="https"/>
 		
 		<form-login 
 			login-page="/login"

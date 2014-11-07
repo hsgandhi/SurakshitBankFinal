@@ -1,12 +1,14 @@
 package asu.bank.login.controller;
 
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaResponse;
@@ -17,10 +19,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -29,6 +30,7 @@ import asu.bank.login.validator.LoginValidator;
 import asu.bank.login.viewBeans.MenuBean;
 import asu.bank.login.viewBeans.TrialBean;
 import asu.bank.utility.EmailUtilityUsingSSL;
+import asu.bank.utility.KeyGenerataionUtility;
 import asu.bank.utility.OneTimePasswordGenerator;
 import asu.bank.utility.SurakshitException;
 
@@ -51,22 +53,28 @@ public class LoginController {
 	 @Autowired
 	 OneTimePasswordGenerator oneTimePasswordGenerator;
 	 
+	 @Autowired
+	 KeyGenerataionUtility keyGenerationUtility;
+	 
 	 private static final Logger logger = Logger.getLogger(LoginController.class);
+	 private static final Logger secureLogger = Logger.getLogger("secure");
 
 	@RequestMapping(value="/login", method = RequestMethod.POST)
 	public String login(HttpServletRequest request,ModelMap model) {
-		System.out.println("I am here");
+		logger.info("Common Logger files");
+		secureLogger.info("Secure logge file");
+		
 		return "login/login";
  
 	}
 	
 	@RequestMapping(value="/testCaptcha", method = RequestMethod.POST)
 	public String testCaptcha(HttpServletRequest request,HttpServletResponse response,ModelMap model)throws SurakshitException, Exception {
-		
+		/*
 		String remoteAddress = request.getRemoteAddr();
 		String challangeField = request.getParameter("recaptcha_challenge_field");
 		String responseField = request.getParameter("recaptcha_response_field");
-
+		
 		ReCaptchaResponse reCaptchaResponse = this.reCaptcha.checkAnswer(remoteAddress, challangeField, responseField);
 
 		 if(reCaptchaResponse.isValid()) {
@@ -74,9 +82,43 @@ public class LoginController {
 		 } else {
 			 model.addAttribute("errMsg", "CaptchaException");
 		 }
+		 */
+		 model.addAttribute("errMsg", "ok");
 		 return "Homepage/nilFragment";
 	}
 	
+	//TODO implement in functionality and remove from here
+	private void pkiTempFunction(HttpServletRequest request) throws SurakshitException, Exception{
+		
+		try
+		{
+			//user approval
+		String filePath = request.getContextPath()+"/WEB-INF/jar/SurakshitBankUser.jar";
+			
+		KeyPair privatePublicPair = keyGenerationUtility.generateKeyPair();
+		
+		String privateKey = new String(Base64.encode(privatePublicPair.getPrivate().getEncoded()));
+		emailUtilityUsingSSL.sendMailWithAttachmentForJar("gandhihardik17@gmail.com", privateKey, "Private key for critical transactions.");
+		
+		//send the hash string
+		String originalString = UUID.randomUUID().toString();
+		HttpSession sesssion = request.getSession();
+		sesssion.setAttribute("originalHashString", originalString);
+		
+		//decrypt and compare the string
+		String encryptedString= null;//get the encrypted string
+		byte[] publicKeyByteArray= Base64.encode(privatePublicPair.getPublic().getEncoded());
+		PublicKey pubicKey = keyGenerationUtility.genPublicKeyFromKeyByte(publicKeyByteArray);
+		String decryptedString = keyGenerationUtility.decryptUsingPublicKey(pubicKey,encryptedString);
+		}
+		catch(Exception exp)
+		{
+			exp.printStackTrace();
+			throw new Exception("Problem in generation of keys");
+		}
+		
+	}
+
 	@RequestMapping(value="/forgotPassword", method = RequestMethod.POST)
 	public String forgotPassword(HttpServletRequest request,ModelMap model)throws SurakshitException, Exception {
 		
@@ -109,15 +151,17 @@ public class LoginController {
 		String otp = sesssion.getAttribute("oneTimePass").toString();
 		String password = request.getParameter("newPassword");
 		String userOtp = request.getParameter("otp");
-		String regex = "";
+		String regex = "[A-Za-z0-9$@]+";
 		
-		if(password.equals("") || password.length()<8 )//|| !password.matches(regex))
+		if(password.equals("") || password.length()<8  || !password.matches(regex))
 			throw new SurakshitException("EnterPassword");
 		if(userOtp.equals("") || otp.length()<8)
 			throw new SurakshitException("EnterOTP");
 		
 		if(userOtp.equals(otp))
 			loginService.changePassword(password, emailID);
+		else
+			throw new SurakshitException("OTPFailed");
 		
 		model.addAttribute("successMessage", "Password changed successfully");
 		
@@ -125,36 +169,6 @@ public class LoginController {
 	}
 	
 	
-	@RequestMapping(value="/adminTrialSubmit", method = RequestMethod.POST)
-	public String showHomePage(@ModelAttribute("trialBean")@Valid TrialBean trialBean, BindingResult result, ModelMap model, HttpServletRequest request) throws SurakshitException, Exception
-	{
-		
-		//loginService.testRoom("hsgandhi@asu.edu", "hi", "hi");
-		loginValidator.validate(trialBean, result);
-		
-		
-		if(result.hasErrors())
-		{
-			return "Homepage/trial";
-		}
-		else
-		{
-			System.out.println(trialBean.getName() + "/n" +
-		trialBean.getMail() +
-		"\n" + trialBean.getDob());
-		}
-		
-		//how to get roles from security context
-		UserDetails userDetails =
-				 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		System.out.println(userDetails.getUsername() + "\n" + userDetails.getPassword());
-		
-		 for (GrantedAuthority authority : userDetails.getAuthorities()) {
-			 System.out.println(authority.getAuthority().toString());
-         }  
-		 
-		return "login/login";
-	}
 /*
 	@RequestMapping(value="/loginfailed", method = RequestMethod.GET)
 	public String loginFailed(ModelMap model, HttpServletRequest request) {
@@ -201,28 +215,39 @@ public class LoginController {
 		 
 		 if("ADMIN".equalsIgnoreCase(role))
 		 {
-			 menuBeanList.add(getPopulatedMenuBean("Working Menu","adminTrial"));
-			 menuBeanList.add(getPopulatedMenuBean("text1","actionValue1"));
-			 menuBeanList.add(getPopulatedMenuBean("text2","actionValue2"));
-			 menuBeanList.add(getPopulatedMenuBean("text3","actionValue3"));
-			 menuBeanList.add(getPopulatedMenuBean("text4","actionValue4"));
+			 menuBeanList.add(getPopulatedMenuBean("MyProfile","adminMyProfile"));
+			 menuBeanList.add(getPopulatedMenuBean("Add Internal User","adminGetInternalUserDetailsAdd"));
+			 menuBeanList.add(getPopulatedMenuBean("PendingTransactions","adminGetPendingTransactions"));
+			 menuBeanList.add(getPopulatedMenuBean("Approve/Reject External User Accounts","adminGetPendingExtUserRequests"));
+			 menuBeanList.add(getPopulatedMenuBean("Get Sytem Log File","adminGetSytemLogFiles"));
+			 menuBeanList.add(getPopulatedMenuBean("Get Secure Log File","adminGetSecureLogFiles"));
 		 }
 		 else if("EMPLOYEE".equalsIgnoreCase(role))
 		 {
 			 menuBeanList.add(getPopulatedMenuBean("My Profile","employeeMyProfile"));
 			 menuBeanList.add(getPopulatedMenuBean("Approve Transactions","employeeGetPendingTransactions"));
 			 menuBeanList.add(getPopulatedMenuBean("Create a Transaction","employeeGetTransactionDetails"));
-			 menuBeanList.add(getPopulatedMenuBean("View a Transaction","employeeViewTransaction"));
-			 menuBeanList.add(getPopulatedMenuBean("Modify a Transaction","employeeModifyTransaction"));
-			 menuBeanList.add(getPopulatedMenuBean("Delete a Transaction","employeeDeleteTransaction"));
+			 menuBeanList.add(getPopulatedMenuBean("View/Modify/Delete Transactions","employeeGetUserEmail"));
+			 menuBeanList.add(getPopulatedMenuBean("Add External User","employeeGetUserDetails"));
+			 menuBeanList.add(getPopulatedMenuBean("View/Modify External User","employeeModifyGetUserDetails"));
 		 }
 		 else if("CUSTOMER".equalsIgnoreCase(role))
 		 {
 			 menuBeanList.add(getPopulatedMenuBean("Credit Balance","customerCreditBalance"));
+			 menuBeanList.add(getPopulatedMenuBean("Debit Amount","customerDebitAmount"));
+			 menuBeanList.add(getPopulatedMenuBean("View Transactions","customerViewAccountDetails"));
+			 menuBeanList.add(getPopulatedMenuBean("Transfer Amount","customerTransferAmount"));
+			 menuBeanList.add(getPopulatedMenuBean("Pending Payments","customerToMerchantPaymentDetails"));
+			 menuBeanList.add(getPopulatedMenuBean("Update Info","customerUpdateInfo"));
 		 }
 		 else if("MERCHANT".equalsIgnoreCase(role))
 		 {
-			 
+			 menuBeanList.add(getPopulatedMenuBean("Request Customer Payment","merchantReqCustPay"));
+			 menuBeanList.add(getPopulatedMenuBean("Update Personal Information","merchantUpdateInfo"));
+			 menuBeanList.add(getPopulatedMenuBean("Credit Balance","merchantCreditBalance"));
+			 menuBeanList.add(getPopulatedMenuBean("Debit Amount","merchantDebitAmount"));
+			 menuBeanList.add(getPopulatedMenuBean("Transfer","merchantTransferAmount"));
+			 menuBeanList.add(getPopulatedMenuBean("View Transactions","merchantViewAccountDetails"));
 		 }
 		 
 		 model.addAttribute("menuList",menuBeanList);

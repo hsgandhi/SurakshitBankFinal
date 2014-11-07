@@ -44,18 +44,19 @@
 	
 	<form method="POST" name="loginFormName" id="loginFormName">
         <label for="username">User Name:</label>
-        <input id="username" name="j_username" type="text" value=""/><br/><br/>
+        <input id="username" name="j_username" type="text" value="" maxlength="30" /><br/><br/>
         <div class="block">
         <label for="password">Password:</label>
-        <input id="password" name="j_password" type="password" class="qwerty"/>&nbsp;&nbsp;&nbsp;
+        <input id="password" name="j_password" type="password" class="qwerty" maxlength="30" />&nbsp;&nbsp;&nbsp;
         <img id="passwd" class="tooltip" title="Click to open the virtual keyboard" src="${pageContext.request.contextPath}/resources/images/keyboard.png">
         <div class="code ui-corner-all"></div>
         </div>
-        <br/>
+        <%-- <br/>
         <br/>
 		<tags:captcha privateKey="6Le FvfwSAAAAANnvC0Gxyq-WAIy6Sw7Sods8DACC" publicKey="6LeFvfwSAAAAAL5pSPXSuMGysfYwS8Mlqz1PLgUR"></tags:captcha>
+		<br/> --%>
 		<br/>
-		
+		<br/>
         <input type="button" value="Log in" onclick="login()">
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="button" value="Forget Password" onclick="goToForgetPassword();" class="linkButton">
@@ -65,9 +66,9 @@
       			<br/>
       			1) Do not use back button or refresh button in the application.
       			<br/>
-      			2) The account will be locked if the 5 continuous login attempts fails.
+      			2) The account will be locked if 5 continuous login attempts fails.
       			<br/>
-      			3) If your account gets locked, contact the system admin by emailing surakshitbank@gmail.com
+      			3) If your account gets locked, contact the system admin by emailing to surakshitbank@gmail.com
       			
  </center>
 </body>
@@ -105,8 +106,10 @@
   	  	            document.loginFormName.submit();
   	  	        }
   	  	      else if (result == "CaptchaException") {
-  	  	    	Recaptcha.reload();
-  	  	    	  alert('Captcha value did not match.');
+  	  	    	//Recaptcha.reload();
+  	  	    	  //alert('Captcha value did not match.');
+  	  	    	document.loginFormName.action=action;
+	  	        document.loginFormName.submit();
   		        }
   	  	        else if (result == "error") {
   	  	            alert('error');
@@ -123,6 +126,6 @@
   	$('#passwd').click(function(){ 
   	 $('.qwerty').getkeyboard().reveal(); 
   	});
-  	window.opener.close();
+  	//window.opener.close();
 </script>      
  
