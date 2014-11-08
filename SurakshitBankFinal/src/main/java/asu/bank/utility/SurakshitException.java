@@ -24,6 +24,7 @@ public class SurakshitException extends RuntimeException {
 			errorMap.put("EnterOTP", "Please enter proper OTP");
 			errorMap.put("NoAccountAvailable", "There is no account for this user.");
 			errorMap.put("AccountLocked", "User account is locked. Contact system admin.");
+			errorMap.put("GovNotApproved", "Government authorities did not authorize to view this PII");
 			
 			//added by kartik
 			errorMap.put("phoneNotFound", "Either the email ID or the phone number entered is incorrect");

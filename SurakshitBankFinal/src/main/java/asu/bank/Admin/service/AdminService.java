@@ -4,6 +4,7 @@ import java.util.List;
 
 import asu.bank.Admin.viewBeans.AdminBean;
 import asu.bank.Admin.viewBeans.InternalUserBeanCreate;
+import asu.bank.Admin.viewBeans.InternalUserBeanModify;
 import asu.bank.Admin.viewBeans.TransactionBean;
 import asu.bank.RegularEmployee.viewBeans.UserBean;
 import asu.bank.utility.SurakshitException;
@@ -51,6 +52,20 @@ public interface AdminService {
 	public boolean doesUserExists(String emailID, String phoneNum) throws SurakshitException, Exception;
 
 	public void approveExtUser(String emailID) throws SurakshitException, Exception;
+	
+	public void rejectExtUser(String emailID) throws SurakshitException, Exception;
+	
+	public List<UserBean> getListInternalUsers() throws SurakshitException, Exception;
+
+	public void deleteInternalUser(String emailID) throws SurakshitException, Exception;
+
+	public UserBean getPIIDtls(String emailId)throws SurakshitException, Exception;
+	
+	public boolean modifyInternalUser(InternalUserBeanModify internalUser) throws SurakshitException, Exception;
+	
+	public List<UserBean> getListExternalUsers() throws SurakshitException, Exception;
+	
+	public void deleteExternalUser(String emailID) throws SurakshitException, Exception;
 
 	/*public void rejectTransaction(Integer transactionID) throws SurakshitException, Exception;
 

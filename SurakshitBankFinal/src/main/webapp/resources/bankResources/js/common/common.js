@@ -32,3 +32,5 @@ function isNullOrEmptyString(varToBeTested)
 		}
 	return false;
 }
+
+$(":input").attr("autocomplete","off");

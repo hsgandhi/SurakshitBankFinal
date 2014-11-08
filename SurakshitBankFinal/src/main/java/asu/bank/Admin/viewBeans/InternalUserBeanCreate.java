@@ -27,7 +27,7 @@ public class InternalUserBeanCreate {
 	
 	@NotEmpty(message="Please enter your document ID")
 	@Pattern(regexp="[A-Za-z0-9]+", message="Please enter your document ID, only alphanumeric characters allowed")
-	@Size(min=8, max=12, message="Document ID should be between 8 and 12 characters")
+	@Size(min=8, max=8, message="Document ID should be only 8 characters")
 	private String documentId;
 	
 	@NotEmpty(message="Please enter a password")

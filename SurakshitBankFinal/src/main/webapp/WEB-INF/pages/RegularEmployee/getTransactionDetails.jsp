@@ -2,7 +2,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix='tags' tagdir='/WEB-INF/tags' %>	
-	
+	<h2> In case of DEBIT and CREDIT, Please enter same email address for both primary and secondary users</h2>
         
         	<form:form action="employeeCreateNewTransaction" commandName="newTransaction">
         		<form:label path="">Transaction Type[DEBIT, CREDIT or PAYMENT]</form:label>

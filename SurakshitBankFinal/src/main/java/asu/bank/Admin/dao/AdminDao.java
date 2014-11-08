@@ -5,6 +5,7 @@ import java.util.List;
 import asu.bank.Admin.viewBeans.*;
 import asu.bank.RegularEmployee.viewBeans.UserBean;
 import asu.bank.hibernateFiles.Account;
+import asu.bank.hibernateFiles.User;
 import asu.bank.utility.SurakshitException;
 
 
@@ -44,7 +45,18 @@ public interface AdminDao {
 
 	public void createAccount(Integer userId, double d) throws SurakshitException, Exception;
 	
-	public void createUser(InternalUserBeanCreate internalUser) throws SurakshitException, Exception;
+	public User createUser(InternalUserBeanCreate internalUser) throws SurakshitException, Exception;
+	
+	public void deleteEntryInUserAttempts(User user) throws SurakshitException, Exception;
+
+	public void deleteEntryInUser(String emailID) throws SurakshitException, Exception;
+	
+	public List<User> getInternalUsersList() throws SurakshitException, Exception;
+	
+	public boolean modifyUser(InternalUserBeanModify internalUser) throws SurakshitException, Exception;
+	
+	public List<User> getExternalUsersList() throws SurakshitException, Exception;
+
 }
 
 

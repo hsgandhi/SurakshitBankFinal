@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import asu.bank.Admin.viewBeans.AccountBean;
 import asu.bank.Admin.viewBeans.AdminBean;
 import asu.bank.Admin.viewBeans.InternalUserBeanCreate;
+import asu.bank.Admin.viewBeans.InternalUserBeanModify;
 import asu.bank.Admin.viewBeans.OperationBean;
 import asu.bank.Admin.viewBeans.TransactionBean;
 import asu.bank.RegularEmployee.viewBeans.UserBean;
@@ -305,7 +306,7 @@ public class AdminDaoImpl implements AdminDao{
 	}
 
 	@Override
-	public void createUser(InternalUserBeanCreate internalUser)
+	public User createUser(InternalUserBeanCreate internalUser)
 			throws SurakshitException, Exception {
 		Session session = hibernateUtility.getSession();
 		User existingUser = (User) session.createQuery("From User where emailId = :emailID").setParameter("emailID", internalUser.getEmailId()).uniqueResult();
@@ -323,167 +324,63 @@ public class AdminDaoImpl implements AdminDao{
 		user.setPassword(internalUser.getPassword());
 		user.setPhoneNumber(Double.parseDouble(internalUser.getPhoneNumber()));
 		session.save(user);
-	}
-
-	
-	
-	/*@Override
-	public void createUser(
-			asu.bank.RegularEmployee.viewBeans.UserBean userToBeCreated)
-			throws SurakshitException, Exception {
-		// TODO Auto-generated method stub
 		
-	}*/
-
-	/*
+		session.flush();
+		
+		return user;
+	}
+	
 	@Override
-	public void approveTransaction(Integer transactionID)
+	public void deleteEntryInUserAttempts(User user)
 			throws SurakshitException, Exception {
 		Session session = hibernateUtility.getSession();
-		Transaction transaction = (Transaction) session.createQuery("From Transaction where transactionId = :ID").setParameter("ID", transactionID).uniqueResult();
-		transaction.setTransactionCurrentStatus("Approved");
-		session.save(transaction);
-		double transactionAmount = transaction.getTransactionAmount();
-		Integer userIDFromTransaction = transaction.getUserByPrimaryParty().getUserId();
-		Account account = (Account) session.createQuery("From Account where user.userId = :userIDTransaction").setParameter("userIDTransaction", userIDFromTransaction).uniqueResult();
-		double balanceBeforeTransaction = account.getBalance();
-		if(transaction.getTransactionType().equals("DEBIT")){
-			account.setBalance(balanceBeforeTransaction - transactionAmount);
-			session.save(account);
-		}else if(transaction.getTransactionType().equals("CREDIT")){
-			account.setBalance(balanceBeforeTransaction + transactionAmount);
-			session.save(account);
-		}else if(transaction.getTransactionType().equals("PAYMENT")){
-			//Retrieve the second user account
-			Integer userIDFromTransactionSecondUser = transaction.getUserBySecondaryParty().getUserId();
-			Account accountSecondaryParty = (Account)session.createQuery("From Account where user.userId = :userIDTransactionSecondUser").setParameter("userIDTransactionSecondUser", userIDFromTransactionSecondUser).uniqueResult();
-			account.setBalance(balanceBeforeTransaction - transactionAmount);
-			session.save(account);
-			double balanceSecondUserBeforeTransaction = accountSecondaryParty.getBalance();
-			accountSecondaryParty.setBalance(balanceSecondUserBeforeTransaction + transactionAmount);
-			session.save(accountSecondaryParty);
+		session.createQuery("Delete From UserAttempts where user = :user").setParameter("user", user).executeUpdate();		
+	}
+
+	@Override
+	public void deleteEntryInUser(String emailID) throws SurakshitException,
+			Exception {
+		Session session = hibernateUtility.getSession();
+		session.createQuery("Delete From User where emailId = :emailId").setParameter("emailId", emailID).executeUpdate();
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getInternalUsersList() throws SurakshitException,
+			Exception {
+		Session session = hibernateUtility.getSession();
+		String accountEnabled = Integer.toString(1);
+		String accountLocked = Integer.toString(0);
+		List<User> employeeList = (List<User>) session.createQuery("From User where role = :role and isAccountEnabled = :isAccountEnabled and isAccountLocked = :isAccountLocked").setParameter("role", "EMPLOYEE").setParameter("isAccountEnabled", accountEnabled).setParameter("isAccountLocked", accountLocked).list();
+		return employeeList; 
+	}
+	
+	@Override
+	public boolean modifyUser(InternalUserBeanModify internalUser)
+			throws SurakshitException, Exception {
+		Session session = hibernateUtility.getSession();
+		User user = (User) session.createQuery("From User where emailId = :emailID").setParameter("emailID", internalUser.getEmailId()).uniqueResult();
+		if(user != null){
+			user.setAddress(internalUser.getAddress());
+			user.setDocumentId(internalUser.getDocumentId());
+			user.setName(internalUser.getName());			 
+			user.setPhoneNumber(new Double(internalUser.getPhoneNumber()));
+			session.save(user);
+			return true;
+		}else{
+			return false;
 		}
-		
-	}
-
-	@Override
-	public void rejectTransaction(Integer transactionID)
-			throws SurakshitException, Exception {
-		Session session = hibernateUtility.getSession();
-		Transaction transaction = (Transaction) session.createQuery("From Transaction where transactionId = :ID").setParameter("ID", transactionID).uniqueResult();
-		transaction.setTransactionCurrentStatus("Rejected");
-		session.save(transaction);
-		
-	}
-
-	@Override
-	public TransactionAccountUserBean getTransaction(Integer transactionID)
-			throws SurakshitException, Exception {
-		Session session = hibernateUtility.getSession();
-		Transaction transaction = (Transaction) session.createQuery("From Transaction where transactionId = :ID")
-				.setParameter("ID",transactionID).uniqueResult();
-		TransactionAccountUserBean transactionBean = new TransactionAccountUserBean();
-		transactionBean.setTransactionAmount(transaction.getTransactionAmount());
-		transactionBean.setTransactionCreatedAt(transaction.getTransactionCreatedAt());
-		transactionBean.setTransactionCurrentStatus(transaction.getTransactionCurrentStatus());
-		transactionBean.setTransactionId(transaction.getTransactionId());
-		transactionBean.setTransactionType(transaction.getTransactionType());
-		transactionBean.setPrimaryUserEmailID(transaction.getUserByPrimaryParty().getEmailId());
-		transactionBean.setPrimaryUserID(transaction.getUserByPrimaryParty().getUserId());
-		transactionBean.setSecondaryUserEmailID(transaction.getUserBySecondaryParty().getEmailId());
-		transactionBean.setSecondaryUserID(transaction.getUserBySecondaryParty().getUserId());
-		return transactionBean;
-	}
-
-	@Override
-	public void createTransaction(TransactionAccountUserBean newTransactionBean)
-			throws SurakshitException, Exception {
-		Session session = hibernateUtility.getSession();
-		User primaryUser = userDataUtility.getUserDtlsFromEmailId(newTransactionBean.getPrimaryUserEmailID());
-		User secondaryUser = userDataUtility.getUserDtlsFromEmailId(newTransactionBean.getSecondaryUserEmailID());
-		Transaction transactionToBeCreated = new Transaction();
-		transactionToBeCreated.setTransactionAmount(newTransactionBean.getTransactionAmount());
-		transactionToBeCreated.setTransactionCurrentStatus(newTransactionBean.getTransactionCurrentStatus());
-		transactionToBeCreated.setTransactionType(newTransactionBean.getTransactionType());
-		transactionToBeCreated.setTransactionType(newTransactionBean.getTransactionType());
-		transactionToBeCreated.setUserByPrimaryParty(primaryUser);
-		transactionToBeCreated.setUserBySecondaryParty(secondaryUser);
-		session.save(transactionToBeCreated);
-	}*/
-	
-	/*@Override
-	public AccountBean getAccountFromAccountID(Integer accountID) throws SurakshitException,
-			Exception {
-		Session session = hibernateUtility.getSession();
-		Account account = (Account) session.createQuery("From Account where accountId = :aID").setParameter("aID", accountID).uniqueResult();
-		AccountBean accountToBeReturned = new AccountBean();
-		accountToBeReturned.setAccountId(account.getAccountId());
-		accountToBeReturned.setBalance(account.getBalance());
-		accountToBeReturned.setUserEmailID(account.getUser().getEmailId());
-		return accountToBeReturned;
 	}
 	
 	@Override
-	public AccountBean getAccountFromUserID(Integer userID)
-			throws SurakshitException, Exception {
+	public List<User> getExternalUsersList() throws SurakshitException,
+			Exception {
 		Session session = hibernateUtility.getSession();
-		User user = userDataUtility.getUserDtlsFromUserId(userID);
-		Account account = (Account) session.createQuery("From Account where userId = :uID").setParameter("uID", user).uniqueResult();
-		AccountBean accountToBeReturned = new AccountBean();
-		accountToBeReturned.setAccountId(account.getAccountId());
-		accountToBeReturned.setBalance(account.getBalance());
-		accountToBeReturned.setUserEmailID(account.getUser().getEmailId());
-		return accountToBeReturned;
+		String accountEnabled = Integer.toString(1);
+		String accountLocked = Integer.toString(0);
+		List<User> employeeList = (List<User>) session.createQuery("From User where role != :admin and role != :employee and isAccountEnabled = :isAccountEnabled and isAccountLocked = :isAccountLocked").setParameter("employee", "EMPLOYEE").setParameter("admin", "ADMIN").setParameter("isAccountEnabled", accountEnabled).setParameter("isAccountLocked", accountLocked).list();
+		return employeeList; 
 	}
-
-	@Override
-	public void updateAccount(AccountBean accountToBeUpdated)
-			throws SurakshitException, Exception {
-		Session session = hibernateUtility.getSession();
-		User userFromEmailID = userDataUtility.getUserDtlsFromEmailId(accountToBeUpdated.getUserEmailID());
-		Account account = (Account) session.createQuery("From Account where user = :USER").setParameter("USER", userFromEmailID).uniqueResult();
-		account.setBalance(accountToBeUpdated.getBalance());		
-	}*/
-
-
-	/* Duplicate method 
-	 * @Override
-	public UserBean getUser(String userEmailID) throws SurakshitException,
-			Exception {
-		Session session = hibernateUtility.getSession();
-		User user = (User) session.createQuery("From User where emailId = :emailID").setParameter("emailID", userEmailID).uniqueResult();
-		if(user == null){
-			return null;
-		}
-		UserBean userToBeReturned = new UserBean();
-		userToBeReturned.setAddress(user.getAddress());
-		userToBeReturned.setDocumentId(user.getDocumentId());
-		userToBeReturned.setEmailId(user.getEmailId());
-		userToBeReturned.setIsAccountEnabled(user.getIsAccountEnabled());
-		userToBeReturned.setIsAccountLocked(user.getIsAccountLocked());
-		userToBeReturned.setName(user.getName());
-		userToBeReturned.setPassword(user.getPassword());
-		userToBeReturned.setPhoneNumber(user.getPhoneNumber().toString());
-		userToBeReturned.setRole(user.getRole());
-		userToBeReturned.setUserId(user.getUserId());
-		return userToBeReturned;
-	}*/
-	
-	/*@Override
-	public void createUser(UserBean userToBeCreated) throws SurakshitException,
-			Exception {
-		Session session = hibernateUtility.getSession();
-		User user = new User();
-		user.setAddress(userToBeCreated.getAddress());
-		user.setDocumentId(userToBeCreated.getDocumentId());
-		user.setEmailId(userToBeCreated.getEmailId());
-		user.setIsAccountEnabled(userToBeCreated.getIsAccountEnabled());
-		user.setIsAccountLocked(userToBeCreated.getIsAccountLocked());
-		user.setName(userToBeCreated.getName());
-		user.setPassword(userToBeCreated.getPassword());
-		user.setPhoneNumber(new String(userToBeCreated.getPhoneNumber()));
-		user.setRole(userToBeCreated.getRole());
-		session.save(user);
-	}*/
-
 }
+

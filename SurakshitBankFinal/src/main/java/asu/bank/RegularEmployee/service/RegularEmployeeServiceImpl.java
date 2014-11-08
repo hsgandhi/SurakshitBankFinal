@@ -171,14 +171,12 @@ public class RegularEmployeeServiceImpl implements RegularEmployeeService {
 	}
 
 	@Override
-	public void checkPhoneNumber(String emailId, String phoneNo) throws SurakshitException,
+	public boolean checkPhoneNumber(String emailId, String phoneNo) throws SurakshitException,
 			Exception {
+		boolean exists = regEmpDao.checkUserExists(emailId, phoneNo);
+		return exists;
 		
-		User user = userDataUtility.getUserDtlsFromEmailId(emailId);
-		Double phoneNum = Double.parseDouble(phoneNo);
 		
-		if(!phoneNo.equals(user.getPhoneNumber()))
-			throw new SurakshitException("phoneNotFound");
 	}
 
 	@Override

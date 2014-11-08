@@ -7,7 +7,8 @@
         
         	<form action="employeeModifyTransaction" method="POST" >
 				
-					<input type="hidden" name="ID" value="${transaction.transactionId}">
+					<%-- <input type="hidden" name="ID" value="${transaction.transactionId}"> --%>
+					<td><input type="hidden" name="CrID" value="${transaction.encryptedTransactionId}"></td>
 					<c:out value="">${transaction.transactionType}</c:out>
 					<label>Please enter amount. Valid format is only numbers with/without decimal and following digits</label><br />
 					<input name="transactionAmount"></input>

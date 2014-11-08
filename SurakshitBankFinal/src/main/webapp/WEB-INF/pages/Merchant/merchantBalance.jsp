@@ -16,6 +16,14 @@
 				<form:errors path="currency"></form:errors></td>
 		</tr>
 		<tr>
+			<td> String to be encrypted: </td>
+			<td> <input readonly="readonly" type="text" size="55" value="<c:out value="${sessionScope.originalMerchantHashString}"></c:out>"> </td>
+		</tr>
+		<tr>
+			<td>Please enter Encrypted Text using jar file: </td>
+			<td><textarea rows="6" cols="75" name="encryptedText"/></textarea></td>
+		</tr>
+		<tr>
 			<td colspan="2">
 				<input type="submit" value="Update Balance">
 			</td>

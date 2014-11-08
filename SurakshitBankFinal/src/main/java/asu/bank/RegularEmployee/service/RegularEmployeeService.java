@@ -31,8 +31,6 @@ public interface RegularEmployeeService {
 
 	public List<TransactionBean> getListTransactions(String emailId) throws SurakshitException, Exception;
 
-	public void checkPhoneNumber(String emailId, String phoneNo) throws SurakshitException, Exception;
-
 	public boolean modifyTransaction(Integer transactionID, Double newAmount) throws SurakshitException, Exception;
 	
 	public void deleteTransaction(Integer transactionID) throws SurakshitException, Exception;
@@ -42,6 +40,8 @@ public interface RegularEmployeeService {
 	public void modifyUser(UserBeanForModify userDetails,String oldEmailID) throws SurakshitException, Exception;
 	
 	public UserBean getUserFromEmailID(String emailID) throws SurakshitException, Exception;
+	
+	public boolean checkPhoneNumber(String emailId, String phoneNo) throws SurakshitException, Exception;
 
 	/*public void rejectTransaction(Integer transactionID) throws SurakshitException, Exception;
 

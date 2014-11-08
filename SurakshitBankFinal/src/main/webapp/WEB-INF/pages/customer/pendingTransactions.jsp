@@ -39,7 +39,8 @@ ${successMessage}
 	<c:forEach var="transaction" items="${transaction}" >
 <form:form name="paymentDetails" action="customerMerchantPayment" commandName="customerPaymentBean">
 	<tr>
-			<td><input type="hidden" name="ID" value="${transaction.transactionId}"></td>
+			<%-- <td><input type="hidden" name="ID" value="${transaction.transactionId}"></td> --%>
+			<td><input type="hidden" name="CrID" value="${transaction.encryptedTransactionId}"></td>
 			<td><c:out value="${transaction.transactionType}"></c:out></td>
 			<td><c:out value="${transaction.transactionCurrentStatus}"></c:out></td>
 			<td><c:out value="${transaction.transactionAmount}"></c:out></td>

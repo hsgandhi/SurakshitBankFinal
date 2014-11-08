@@ -44,22 +44,22 @@
 	
 	<form method="POST" name="loginFormName" id="loginFormName">
         <label for="username">User Name:</label>
-        <input id="username" name="j_username" type="text" value="" maxlength="30" /><br/><br/>
+        <input id="username" name="j_username" type="text" value="" maxlength="40" /><br/><br/>
         <div class="block">
         <label for="password">Password:</label>
         <input id="password" name="j_password" type="password" class="qwerty" maxlength="30" />&nbsp;&nbsp;&nbsp;
         <img id="passwd" class="tooltip" title="Click to open the virtual keyboard" src="${pageContext.request.contextPath}/resources/images/keyboard.png">
         <div class="code ui-corner-all"></div>
         </div>
-        <%-- <br/>
         <br/>
-		<tags:captcha privateKey="6Le FvfwSAAAAANnvC0Gxyq-WAIy6Sw7Sods8DACC" publicKey="6LeFvfwSAAAAAL5pSPXSuMGysfYwS8Mlqz1PLgUR"></tags:captcha>
-		<br/> --%>
+        <br/>
+		<%-- <tags:captcha privateKey="44edb343f98af16fa03fcf82f98cf0d1" publicKey="01DsxNRw3nGaNomGO_W0ygOw=="></tags:captcha> --%>
+		<br/>
 		<br/>
 		<br/>
         <input type="button" value="Log in" onclick="login()">
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="button" value="Forget Password" onclick="goToForgetPassword();" class="linkButton">
+        <input type="button" value="Forgot Password" onclick="goToForgetPassword();" class="linkButton">
       </form>
       
       			<h2>Important instruction:</h2>
@@ -109,7 +109,7 @@
   	  	    	//Recaptcha.reload();
   	  	    	  //alert('Captcha value did not match.');
   	  	    	document.loginFormName.action=action;
-	  	        document.loginFormName.submit();
+	  	            document.loginFormName.submit();
   		        }
   	  	        else if (result == "error") {
   	  	            alert('error');

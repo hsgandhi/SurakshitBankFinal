@@ -279,6 +279,19 @@ public class RegularEmployeeDaoImpl implements RegularEmployeeDao{
 		hibernateUtility.getSession().save(attempts);
 		
 	}
+	
+	
+	@Override
+	public boolean checkUserExists(String emailID, String phoneNum)
+			throws SurakshitException, Exception {
+		Session session = hibernateUtility.getSession();
+		User user = (User) session.createQuery("From User where emailId = :emailID and phoneNumber = :phoneNumber").setParameter("emailID", emailID).setParameter("phoneNumber", new Double(phoneNum)).uniqueResult();
+		if(user != null){
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 
 	

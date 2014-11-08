@@ -145,7 +145,7 @@ public class EmailUtilityUsingSSL {
 		helper.setFrom("surakshitbank@gmail.com");
 		helper.setTo(emailID);
 		helper.setSubject(subject);
-		helper.setText("Please find attached text file "+ fileName +" containing the private key. \n Please find the attached jar file to be used in critical transactions \n" + hiddenmessage);
+		helper.setText("Your account has been enabled. \n Please find attached text file "+ fileName +" containing the private key. \n Please find the attached jar file to be used in critical transactions \n" + hiddenmessage);
 		
 		file = new File(fileName+ ".txt");
 		try (FileOutputStream fop = new FileOutputStream(file)) {

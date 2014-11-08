@@ -6,27 +6,28 @@
 	
         <table >
         <tr>
-        		<th style="visibility: false;"></th>
         		<th style="visibility: false"></th>
         		<th>Type</th>
         		<th>Transaction Amount</th>
         		<th>From user Email</th>
         		<th>To user Email</th>
         		<th>Transaction created time</th>
+        		<th>Select operation</th>
+        		<th></th>
         	</tr>
         	<c:forEach items="${PendingTransactionsList}" var="pendingTransaction">
-        	<form:form action="approveRejectTransaction" method="POST">
+        	<form:form action="employeeApproveRejectTransaction" method="POST">
 				<tr>
 					<%-- <td><input type="hidden" name="ID" value="${pendingTransaction.transactionId}"></td> --%>
-					<td><input type="hidden" name="CrID" value="${pendingTransaction.encryptedTransactionId}"></td>
-					<td><c:out value="${pendingTransaction.transactionType}"></c:out> </td>
-					<td><c:out value="${pendingTransaction.transactionAmount}"></c:out></td>
-					<td><c:out value="${pendingTransaction.primaryUserEmail}"></c:out></td>
-					<td><c:out value="${pendingTransaction.secondaryUserEmail}"></c:out></td>
-					<td><c:out value="${pendingTransaction.transactionCreatedAt}"></c:out></td>
-					<td><input type = "radio" name = "approveReject" id = "approveRejectSelection" value = "Approve" >Approve</td>
-					<td><input type = "radio" name = "approveReject" id = "approveRejectSelection" value = "Reject" >Reject</td>
-					<td><input type = "submit">
+					<td  ><input type="hidden" name="CrID" value="${pendingTransaction.encryptedTransactionId}"></td>
+					<td align="center"><c:out value="${pendingTransaction.transactionType}"></c:out> </td>
+					<td align="center"><c:out value="${pendingTransaction.transactionAmount}"></c:out></td>
+					<td align="center"><c:out value="${pendingTransaction.primaryUserEmail}"></c:out></td>
+					<td align="center"><c:out value="${pendingTransaction.secondaryUserEmail}"></c:out></td>
+					<td align="center"><c:out value="${pendingTransaction.transactionCreatedAt}"></c:out></td>
+					<td align="center"><input type = "radio" name = "approveReject" id = "approveRejectSelection" value = "Approve" >Approve</td>
+					<td align="center"><input type = "radio" name = "approveReject" id = "approveRejectSelection" value = "Reject" >Reject</td>
+					<td align="center"><input type = "submit">
 				</tr>
 			</form:form>
 			</c:forEach>

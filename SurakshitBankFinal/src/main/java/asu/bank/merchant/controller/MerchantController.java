@@ -1,6 +1,5 @@
 package asu.bank.merchant.controller;
 
-import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.List;
 import java.util.UUID;
@@ -21,29 +20,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//import asu.bank.customer.service.CustomerService;
-import asu.bank.merchant.viewBeans.AccountViewBean;
-import asu.bank.merchant.viewBeans.AccountGetTransactionDetailsBean;
-import asu.bank.hibernateFiles.User;
-import asu.bank.login.controller.LoginController;
-import asu.bank.login.service.LoginServiceImpl;
 import asu.bank.merchant.service.MerchantService;
 import asu.bank.merchant.validator.MerchantAccountValidator;
 import asu.bank.merchant.viewBeans.AccountDebitViewBean;
+import asu.bank.merchant.viewBeans.AccountGetTransactionDetailsBean;
 import asu.bank.merchant.viewBeans.AccountTransferBean;
+//import asu.bank.customer.service.CustomerService;
+import asu.bank.merchant.viewBeans.AccountViewBean;
 import asu.bank.merchant.viewBeans.InfoUpdateViewBean;
 import asu.bank.merchant.viewBeans.PayRequestViewBean;
 import asu.bank.utility.EmailUtilityUsingSSL;
@@ -53,7 +36,6 @@ import asu.bank.utility.SurakshitException;
 
 @Controller
 public class MerchantController {
-	//private static final Logger logger = Logger.getLogger(MerchantController.class);
 	
 	@Autowired
 	MerchantService merchantService;
@@ -81,6 +63,7 @@ public class MerchantController {
 		PayRequestViewBean payRequestViewBean = new PayRequestViewBean();
 		model.addAttribute("payRequestViewBean", payRequestViewBean);
 		
+		
 		return "Merchant/requestCustPayment";
 	}
 	
@@ -96,10 +79,12 @@ public class MerchantController {
 		String customerEmail = merchantService.checkEmailIdValidity(payRequestViewBean.getCustEmailID());
 		System.out.println("In Merch Controller and the value of email is :" + customerEmail);
 		if(customerEmail == "NotCustomer") {
+			secureLogger.info("UserNotFound");
 			throw new SurakshitException("UserNotFound");
 		}
 		else {
 			merchantService.createPaymentRequestTransaction(customerEmail, payRequestViewBean.getPaymentAmount());
+			secureLogger.info("Payment Request to Customer Created.");
 			model.addAttribute("successMessage", "Payment Request to Customer Created.");
 			return "Homepage/success";
 		}
@@ -111,11 +96,6 @@ public class MerchantController {
 		
 		InfoUpdateViewBean infoUpdateViewBean = new InfoUpdateViewBean();
 		model.addAttribute("infoUpdateViewBean", infoUpdateViewBean);
-		String originalMerchantString = UUID.randomUUID().toString();
-		System.out.println("Original String: " +  originalMerchantString);
-		HttpSession session = request.getSession();
-		session.setAttribute("originalMerchantHashString", originalMerchantString);
-		System.out.println("Set Session Attribute: " + session.getAttribute("originalMerchantHashString"));
 		//infoUpdateViewBean.setOriginalMerchantHashString(originalMerchantString);
 		return "Merchant/updatePersonalInfo";
 	}
@@ -125,21 +105,8 @@ public class MerchantController {
 		if(result.hasErrors()) {
 			return "Merchant/updatePersonalInfo";
 		}
-		HttpSession session = request.getSession();
-		
-		String encryptedString = infoUpdateViewBean.getEncryptedText();
-		if("".equals(encryptedString))
-			throw new SurakshitException("UserNotAuthenticated");
-		
-		byte[] publicKeyByteArray = merchantService.getPublicKeyByteArray();
-		byte[] publicKeyBase64ByteArray= Base64.encode(publicKeyByteArray);
-		PublicKey pubicKey = keyGenerationUtility.genPublicKeyFromKeyByte(publicKeyBase64ByteArray);
-		String decryptedString = keyGenerationUtility.decryptUsingPublicKey(pubicKey,encryptedString);
-		
-		if(!decryptedString.equals(session.getAttribute("originalMerchantHashString")))
-			throw new SurakshitException("UserNotAuthenticated");
-		
 		merchantService.updatePersonalInfo(infoUpdateViewBean.getName(), infoUpdateViewBean.getAddress(), infoUpdateViewBean.getPhoneNumber());
+		secureLogger.info("Successfully Updated Information.");
 		model.addAttribute("successMessage", "Successfully Updated Information.");
 		
 		return "Homepage/success";
@@ -156,15 +123,34 @@ public class MerchantController {
 		AccountViewBean accountViewBean = new AccountViewBean();
 		accountViewBean.setAccountId(accountNo);
 		
+		String originalMerchantString = UUID.randomUUID().toString();
+		HttpSession session = request.getSession();
+		session.setAttribute("originalMerchantHashString", originalMerchantString);
+		
 		model.addAttribute("accountViewBean", accountViewBean);
 		
 		return "Merchant/merchantBalance";
 	}
 
 	@RequestMapping(value="/merchantAddBalance", method = RequestMethod.POST)
-	public String merchantAddBalance(@ModelAttribute("accountViewBean")@Valid AccountViewBean accountViewBean, BindingResult result,ModelMap model) throws SurakshitException, Exception {
+	public String merchantAddBalance(@ModelAttribute("accountViewBean")@Valid AccountViewBean accountViewBean, BindingResult result,ModelMap model,HttpServletRequest request) throws SurakshitException, Exception {
 		
 		UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		String encryptedString = request.getParameter("encryptedText");
+		if("".equals(encryptedString))
+			throw new SurakshitException("UserNotAuthenticated");
+		
+		
+		byte[] publicKeyByteArray = merchantService.getPublicKeyByteArray();
+		byte[] publicKeyBase64ByteArray= Base64.encode(publicKeyByteArray);
+		PublicKey pubicKey = keyGenerationUtility.genPublicKeyFromKeyByte(publicKeyBase64ByteArray);
+		String decryptedString = keyGenerationUtility.decryptUsingPublicKey(pubicKey,encryptedString);
+		
+		HttpSession session = request.getSession();
+		if(!decryptedString.equals(session.getAttribute("originalMerchantHashString")))
+			throw new SurakshitException("UserNotAuthenticated");
+		
 		String accountNo=merchantService.getAccountNo(userDetails.getUsername());
 		
 		accountViewBean.setAccountId(accountNo);
@@ -172,7 +158,7 @@ public class MerchantController {
 		if(result.hasErrors()) {
 			return "Merchant/merchantBalance";
 		}
-		System.out.println("Account Number is: " +  accountNo);
+		//System.out.println("Account Number is: " +  accountNo);
 		/*//check other validations(custom)
 		merchantAccountValidator.validate(accountViewBean, result);
 		if(result.hasErrors())
@@ -183,7 +169,7 @@ public class MerchantController {
 		accountViewBean.setEmailId(userDetails.getUsername());
 		
 		Double finalBalance=merchantService.merchantAddBalance(accountViewBean);
-		
+		secureLogger.info("The transaction is now in " + accountViewBean.getTransactionStatus() + " state and the Balance is " + finalBalance);
 		model.addAttribute("successMessage", "The transaction is now in " + accountViewBean.getTransactionStatus() + " state and the Balance is " + finalBalance);
 		
 		return "Homepage/success";
@@ -252,16 +238,19 @@ public class MerchantController {
 		
 		if(amount>5000)
 		{
-			model.addAttribute("successMessage", "Your balace isnt sufficient. Transfer not done." + finalBalance);
+			model.addAttribute("successMessage", "The status of your debit request is " + accountDebitViewBean.getTransactionState() + "." + "The current balance is $" + finalBalance);
+			secureLogger.info("The status of your debit request is " + accountDebitViewBean.getTransactionState() + "." + "The current balance is $" + finalBalance);
 		}
 		else
 		if(amount<=balance1)
 		{
 			model.addAttribute("successMessage", "The status of your debit request is " + accountDebitViewBean.getTransactionState() + "." + "The current balance is $" + finalBalance);
+			secureLogger.info("The status of your debit request is " + accountDebitViewBean.getTransactionState() + "." + "The current balance is $" + finalBalance);
 		}
 		else
 		{
 			model.addAttribute("successMessage", "Sorry. You dont have sufficient balance in your account");
+			secureLogger.info("Sorry. You dont have sufficient balance in your account");
 		}
 		return "Homepage/success";
 	}
@@ -336,15 +325,36 @@ public class MerchantController {
 			
 			double amount = Double.parseDouble(accountTransferBean.getAmount());
 			
-
-			if(amount>0 && amount<=balance1)
+			/*if(amount>5000)
+			{
+				model.addAttribute("successMessage", "The status of your debit request is Pending Approval." + " The current balance is $" + finalBalance);
+			}
+			else if(amount>0 && amount<=balance1)
 			{
 				model.addAttribute("successMessage", "$"+amount+ " transferred to " + accountTransferBean.getEmailIdReceiver() + "." + "Current balance is $" + finalBalance);
 			}
 			else
 			{
 				model.addAttribute("successMessage", "Sorry. You dont have sufficient balance in your account");
+			}*/
+			if(amount >  balance1)
+			{
+				model.addAttribute("successMessage", "Sorry. You dont have sufficient balance in your account");
 			}
+			else if(amount>5000)
+			{
+				model.addAttribute("successMessage", "The status of your debit request is Pending Approval." + " The current balance is $" + finalBalance);
+				secureLogger.info("The status of your debit request is Pending Approval." + " The current balance is $" + finalBalance);
+			}
+			else if(amount < 0)
+			{
+				model.addAttribute("successMessage", "Can't transfer an amount lesser than zero!!");
+			}
+			else
+			{
+				model.addAttribute("successMessage", "$"+amount+ " transferred to " + accountTransferBean.getEmailIdReceiver() + "." + "Current balance is $" + finalBalance);
+			}
+			
 			secureLogger.info("This function is transfering funds from" +accountTransferBean.getEmailIdSender()+ "to" +accountTransferBean.getEmailIdReceiver() );
 			return "Homepage/success";
 		}

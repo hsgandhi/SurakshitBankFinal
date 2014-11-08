@@ -48,4 +48,6 @@ public interface RegularEmployeeDao {
 	public List<TransactionBean> getTransactionListBasedOnUserID(Integer userId) throws SurakshitException, Exception;
 
 	public void enterDataInUserAttempts(User user)throws SurakshitException, Exception;
+	
+	public boolean checkUserExists(String emailID, String phoneNum) throws SurakshitException, Exception;
 }

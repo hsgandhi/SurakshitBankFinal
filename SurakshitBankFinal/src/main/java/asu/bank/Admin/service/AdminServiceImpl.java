@@ -1,21 +1,24 @@
 package asu.bank.Admin.service;
 
 import java.security.KeyPair;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import asu.bank.Admin.dao.AdminDao;
-import asu.bank.Admin.dao.AdminDaoImpl;
 import asu.bank.Admin.viewBeans.AccountBean;
 import asu.bank.Admin.viewBeans.AdminBean;
 import asu.bank.Admin.viewBeans.InternalUserBeanCreate;
+import asu.bank.Admin.viewBeans.InternalUserBeanModify;
 import asu.bank.Admin.viewBeans.TransactionBean;
+import asu.bank.RegularEmployee.dao.RegularEmployeeDao;
 import asu.bank.RegularEmployee.viewBeans.UserBean;
 import asu.bank.hibernateFiles.User;
 import asu.bank.utility.EmailUtilityUsingSSL;
@@ -38,6 +41,9 @@ public class AdminServiceImpl implements AdminService {
 	
 	@Autowired
 	EmailUtilityUsingSSL emailUtilityUsingSSL;
+	
+	@Autowired
+	RegularEmployeeDao regEmpDao;
 	
 	private static final Logger logger = Logger.getLogger(AdminServiceImpl.class);
 	 private static final Logger secureLogger = Logger.getLogger("secure");
@@ -151,7 +157,13 @@ public class AdminServiceImpl implements AdminService {
 	public boolean createInternalUser(InternalUserBeanCreate internalUser)
 			throws SurakshitException, Exception {
 		// TODO Auto-generated method stub
-		adminDao.createUser(internalUser);
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String hashedPassword = passwordEncoder.encode(internalUser.getPassword());
+		internalUser.setPassword(hashedPassword);
+		User user = adminDao.createUser(internalUser);
+		
+		regEmpDao.enterDataInUserAttempts(user);
+		
 		return true;
 	}
 
@@ -191,170 +203,96 @@ public class AdminServiceImpl implements AdminService {
 		
 	}	
 	
+	
+	@Override
+	public void rejectExtUser(String emailID) throws SurakshitException,
+			Exception {
+		User user = userDataUtility.getUserDtlsFromEmailId(emailID);
+		adminDao.deleteEntryInUserAttempts(user);
+		adminDao.deleteEntryInUser(emailID);
+	}	
+	
+	@Override
+	public List<UserBean> getListInternalUsers() throws SurakshitException,
+			Exception {
+		List<User> employeeListReturned = adminDao.getInternalUsersList();
+		//convert user to userbean
+		List<UserBean> employeeList = new ArrayList<UserBean>();
+		for(User u : employeeListReturned){
+			UserBean local = new UserBean();
+			local.setAddress(u.getAddress());
+			local.setDocumentId(u.getDocumentId());
+			local.setEmailId(u.getEmailId());
+			local.setIsAccountEnabled(u.getIsAccountEnabled());
+			local.setIsAccountLocked(u.getIsAccountLocked());
+			local.setName(u.getName());
+			local.setPassword(u.getPassword());
+			local.setPhoneNumber(u.getPhoneNumber().toString());
+			local.setRole(u.getRole());
+			local.setUserId(u.getUserId());
+			employeeList.add(local);
+		}
+		return employeeList;
+	}
+
+	@Override
+	public void deleteInternalUser(String emailID)
+			throws SurakshitException, Exception {
+		rejectExtUser(emailID);
+	}
+
+	@Override
+	public UserBean getPIIDtls(String emailId) throws SurakshitException, Exception {
+		User user = userDataUtility.getUserDtlsFromEmailId(emailId);
+		UserBean userBean = new UserBean();
+		userBean.setAddress(user.getAddress());
+		userBean.setDocumentId(user.getDocumentId());
+		userBean.setEmailId(user.getEmailId());
+		userBean.setName(user.getName());
+		userBean.setPhoneNumber(user.getPhoneNumber().toString());
+		
+		return userBean;
+	}
+
+	@Override
+	public boolean modifyInternalUser(InternalUserBeanModify internalUser)
+			throws SurakshitException, Exception {
+		boolean success = adminDao.modifyUser(internalUser);
+		if(success){
+			return true;
+		}else{
+			return false;
+		}
+	}	
+	
+	@Override
+	public List<UserBean> getListExternalUsers() throws SurakshitException,
+			Exception {
+		List<User> employeeListReturned = adminDao.getExternalUsersList();
+		
+		List<UserBean> employeeList = new ArrayList<UserBean>();
+		for(User u : employeeListReturned){
+			UserBean local = new UserBean();
+			local.setAddress(u.getAddress());
+			local.setDocumentId(u.getDocumentId());
+			local.setEmailId(u.getEmailId());
+			local.setIsAccountEnabled(u.getIsAccountEnabled());
+			local.setIsAccountLocked(u.getIsAccountLocked());
+			local.setName(u.getName());
+			local.setPassword(u.getPassword());
+			local.setPhoneNumber(u.getPhoneNumber().toString());
+			local.setRole(u.getRole());
+			local.setUserId(u.getUserId());
+			employeeList.add(local);
+		}
+		return employeeList;
+	}	
+	
+	@Override
+	public void deleteExternalUser(String emailID) throws SurakshitException,
+			Exception {
+		rejectExtUser(emailID);
+		
+	}
+
 }//end class
-	
-
-
-
-
-
-
-	/*@Override
-	public List<OperationBean> getPendingOperations() throws SurakshitException, Exception
-	{
-		return adminDao.getPendingOperations();
-	}
-	
-	@Override
-	public boolean rejectOperation(Integer operationID)
-		throws SurakshitException, Exception {
-	OperationBean operation = adminDao.getOperation(operationID);
-	if(operation.getOperationCurrentStatus().equals("PendingApproval")){
-		operation.setOperationCurrentStatus("Rejected");
-		return true;
-	}
-	return false;
-	}
-	@Override
-	public boolean approveOperation(Integer operationID)
-		throws SurakshitException, Exception {
-	OperationBean operation = adminDao.getOperation(operationID);
-	if(operation.getOperationCurrentStatus().equals("PendingApproval")){
-		operation.setOperationCurrentStatus("Approved");
-		return true;
-	}
-	return false;}*/
-
-	/*@Override
-	public void modifyUser(ModifyOperationsBean userDetails, String oldEmailID)throws SurakshitException, Exception {
-		adminDao.updateUser(userDetails, oldEmailID);
-	}
-	
-	public UserBean getUserFromEmailID(String emailID) throws SurakshitException, Exception{
-		UserBean user = adminDao.getUser(emailID);
-		if(user == null){
-			return null;
-		}else{
-			return user;
-		}
-	}
-	*/
-
-	/*@Override
-	public boolean createNewTransaction(TransactionBean newTransactionBean)
-			throws SurakshitException, Exception {
-		User primaryUser = userDataUtility.getUserDtlsFromEmailId(newTransactionBean.getPrimaryUserEmail());
-		User secondaryUser = userDataUtility.getUserDtlsFromEmailId(newTransactionBean.getSecondaryUserEmail());
-		if(primaryUser == null || secondaryUser == null){
-			return false;
-		}		
-		if(newTransactionBean.getTransactionAmount() >= 50000.0){
-			if(newTransactionBean.getTransactionType().equals("DEBIT")){
-				if(!newTransactionBean.getPrimaryUserEmail().equals(newTransactionBean.getSecondaryUserEmail())){
-					return false;
-				}					
-				if(!debitAccount(newTransactionBean.getPrimaryUserEmail(), (Double)newTransactionBean.getTransactionAmount()))
-					return false;
-			}else if(newTransactionBean.getTransactionType().equals("CREDIT")){
-				if(!newTransactionBean.getPrimaryUserEmail().equals(newTransactionBean.getSecondaryUserEmail())){
-					return false;
-				}
-				creditAccount(newTransactionBean.getPrimaryUserEmail(), (Double)newTransactionBean.getTransactionAmount());
-			}else if(newTransactionBean.getTransactionType().equals("PAYMENT")){
-				if(!transferBetweenAccounts(newTransactionBean.getPrimaryUserEmail(), newTransactionBean.getSecondaryUserEmail(), (Double)newTransactionBean.getTransactionAmount()))
-					return false;
-			}	
-			newTransactionBean.setTransactionCurrentStatus("Approved");
-			adminDao.createTransaction(newTransactionBean);
-			return true;
-		}else{
-			newTransactionBean.setTransactionCurrentStatus("PendingApproval");
-			adminDao.createTransaction(newTransactionBean);
-			return true;
-		}
-	}*/
-
-
-	/*@Override
-	public boolean createUser(UserBean userDetails) throws SurakshitException,Exception {
-		
-		if(adminDao.getUser(userDetails.getEmailId()) != null){
-			return false;
-		}
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String hashedPassword = passwordEncoder.encode(userDetails.getPassword());
-		userDetails.setPassword(hashedPassword);
-		userDetails.setIsAccountEnabled(Integer.toString(0));
-		userDetails.setIsAccountLocked(Integer.toString(0));
-	    adminDao.createUser(userDetails);
-		return true;
-	}*/
-
-	/*@Override
-	public boolean modifyTransaction(Integer transactionID, Double newAmount)
-			throws SurakshitException, Exception {
-		TransactionBean oldTransaction = adminDao.getTransaction(transactionID);
-		
-		if(oldTransaction.getTransactionCurrentStatus().equals("Approved")){
-			throw new SurakshitException("CantModifyApprovedTransaction");
-		}else if(oldTransaction.getTransactionCurrentStatus().equals("PendingApproval")){
-			deleteTransaction(oldTransaction.getTransactionId());
-			return true;
-		}
-		return false;
-	}*/
-
-	/*
-	@Override
-	public void deleteTransaction(Integer transactionID)
-			throws SurakshitException, Exception {
-		TransactionBean transaction = adminDao.getTransaction(transactionID);
-		if(transaction.getTransactionCurrentStatus().equals("Approved")){
-			throw new SurakshitException("CantDeleteApprovedTransaction");
-		}else if(transaction.getTransactionCurrentStatus().equals("PendingApproval")){
-			adminDao.deleteTransaction(transactionID);
-		}
-		
-	}*/
-	
-	
-	/*
-	@Override
-	public TransactionAccountUserBean getTransaction(Integer transactionID)
-			throws SurakshitException, Exception {
-		return adminDao.getTransaction(transactionID);
-	}
-
-	@Override
-	public void createTransaction(TransactionAccountUserBean newTransactionBean)
-			throws SurakshitException, Exception {
-		if(newTransactionBean.getTransactionAmount() >= 50000.0){
-			newTransactionBean.setTransactionCurrentStatus("Approved");
-		}else{
-			newTransactionBean.setTransactionCurrentStatus("PendingApproval");
-		}
-		adminDao.createTransaction(newTransactionBean);
-	}
-
-	@Override
-	public void modifyTransaction(TransactionAccountUserBean editedTransactionBean)
-			throws SurakshitException, Exception {
-		//TODO
-		
-	}
-
-	@Override
-	public void deleteTransaction(Integer transactionID) throws SurakshitException, Exception {
-		TransactionAccountUserBean toBeDeletedTransaction = adminDao.getTransaction(transactionID);
-		String transactionType = toBeDeletedTransaction.getTransactionType();
-		if(transactionType.equals("DEBIT")){
-			//Since he had withdrawn the money in the transaction, add that amount now
-		}else if(transactionType.equals("CREDIT")){
-			//Since he had deposited money in the transaction, reduce that amount now
-		}else if(transactionType.equals("PAYMENT")){
-			//The primary party should be added the amount and the secondary party should be reduced the amount
-		}
-		
-	}
-*/
-

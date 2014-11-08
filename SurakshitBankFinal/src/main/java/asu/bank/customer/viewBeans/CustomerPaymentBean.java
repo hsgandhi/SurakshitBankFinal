@@ -27,8 +27,17 @@ public class CustomerPaymentBean {
 	private String emailIdReceiver;
 	private String accountIdReceiver;
 	private String transactionId;
+	private String encryptedTransactionId;
 	
 	
+	public String getEncryptedTransactionId() {
+		return encryptedTransactionId;
+	}
+
+	public void setEncryptedTransactionId(String encryptedTransactionId) {
+		this.encryptedTransactionId = encryptedTransactionId;
+	}
+
 	public String getTransactionId() {
 		return transactionId;
 	}

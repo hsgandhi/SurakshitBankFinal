@@ -221,15 +221,19 @@ public class LoginController {
 			 menuBeanList.add(getPopulatedMenuBean("Approve/Reject External User Accounts","adminGetPendingExtUserRequests"));
 			 menuBeanList.add(getPopulatedMenuBean("Get Sytem Log File","adminGetSytemLogFiles"));
 			 menuBeanList.add(getPopulatedMenuBean("Get Secure Log File","adminGetSecureLogFiles"));
+			 menuBeanList.add(getPopulatedMenuBean("Request PII","adminRequestPII"));
+			 menuBeanList.add(getPopulatedMenuBean("Delete Internal User Accounts","adminGetListInternalUsers"));
+			 menuBeanList.add(getPopulatedMenuBean("Modify Internal/External User","adminGetInternalUserDetailsMODIFY"));
+			menuBeanList.add(getPopulatedMenuBean("Delete External User Accounts","adminGetListExternalUsers"));
 		 }
 		 else if("EMPLOYEE".equalsIgnoreCase(role))
 		 {
 			 menuBeanList.add(getPopulatedMenuBean("My Profile","employeeMyProfile"));
 			 menuBeanList.add(getPopulatedMenuBean("Approve Transactions","employeeGetPendingTransactions"));
 			 menuBeanList.add(getPopulatedMenuBean("Create a Transaction","employeeGetTransactionDetails"));
-			 menuBeanList.add(getPopulatedMenuBean("View/Modify/Delete Transactions","employeeGetUserEmail"));
+			 menuBeanList.add(getPopulatedMenuBean("Modify/Delete Transactions","employeeGetUserEmail"));
 			 menuBeanList.add(getPopulatedMenuBean("Add External User","employeeGetUserDetails"));
-			 menuBeanList.add(getPopulatedMenuBean("View/Modify External User","employeeModifyGetUserDetails"));
+			 menuBeanList.add(getPopulatedMenuBean("Modify External User","employeeModifyGetUserDetails"));
 		 }
 		 else if("CUSTOMER".equalsIgnoreCase(role))
 		 {

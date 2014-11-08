@@ -68,7 +68,7 @@ public class RegularEmployeeController {
 	}
 	
 	
-	//TODO encrypt
+	// encrypt
 	@RequestMapping(value="/employeeListTransactions", method = RequestMethod.POST)
 	public String employeeListTransactions(@ModelAttribute("userDetails")@Valid UserEmailPhoneBean userDetails, BindingResult result, ModelMap model) throws SurakshitException, Exception{
 		if(result.hasErrors())
@@ -76,7 +76,13 @@ public class RegularEmployeeController {
 			return "RegularEmployee/getUserDetailsForTransactions";
 		}
 		//regEmpService.checkPhoneNumber(userDetails.getEmailId(), userDetails.getPhoneNumber());
-		
+		 boolean exists = regEmpService.checkPhoneNumber(userDetails.getEmailId(), userDetails.getPhoneNumber());
+			if(!exists){
+				model.addAttribute("successMessage", "Such a user does not exist");
+				return "Homepage/success";
+			}
+
+			
 		List<TransactionBean> transactionList = regEmpService.getListTransactions(userDetails.getEmailId());
 		for(TransactionBean transactionBean: transactionList)
 		{
@@ -87,7 +93,8 @@ public class RegularEmployeeController {
 		
 	}
 	
-	//TODO decrypt
+	// decrypt
+	//encrypt
 	@RequestMapping(value="/employeeModifyDeleteTransaction", method = RequestMethod.POST)
 	public String modifyDeleteTransaction(HttpServletRequest request, ModelMap model) throws SurakshitException, Exception{
 		//Integer transactionID =  Integer.parseInt(request.getParameter("ID"));
@@ -98,6 +105,10 @@ public class RegularEmployeeController {
 		String status = (String) request.getParameter("modifyDelete");
 		if(status.equals("Modify")){
 			TransactionBean transaction = regEmpService.getTransaction(transactionID);
+			
+			//encrypt
+			transaction.setEncryptedTransactionId(maskUtility.getMaskedString(transaction.getTransactionId().toString()));
+			
 			model.addAttribute("transaction", transaction);
 			return "RegularEmployee/displayTransactionToBeModified";
 		}else if(status.equals("Delete")){
@@ -106,7 +117,7 @@ public class RegularEmployeeController {
 		return "RegularEmployee/debug";
 	}
 	
-	//TODO decrypt
+	// decrypt
 	@RequestMapping(value="/employeeModifyTransaction", method = RequestMethod.POST)
 	public String modifyTransaction(HttpServletRequest request, ModelMap model) throws SurakshitException, Exception{
 		String amount = request.getParameter("transactionAmount");
@@ -115,7 +126,11 @@ public class RegularEmployeeController {
 			throw new SurakshitException("invalidAmount");
 		}
 		Double newAmount = Double.parseDouble(amount);
-		Integer transactionID =  Integer.parseInt(request.getParameter("ID"));
+		//Integer transactionID =  Integer.parseInt(request.getParameter("ID"));
+		//decrypt
+		String tranId= maskUtility.getOriginalString(request.getParameter("CrID"));
+		Integer transactionID =Integer.parseInt(tranId);
+		
 		TransactionBean transactionBeforeDeleting = regEmpService.getTransaction(transactionID);
 		boolean toCreateNew = regEmpService.modifyTransaction(transactionID, newAmount);
 		if(toCreateNew){
@@ -135,7 +150,7 @@ public class RegularEmployeeController {
 	}
 	
 	//decrypt
-	@RequestMapping(value="/approveRejectTransaction", method = RequestMethod.POST)
+	@RequestMapping(value="/employeeApproveRejectTransaction", method = RequestMethod.POST)
 	public String accessUserAccount(HttpServletRequest request, ModelMap model) throws SurakshitException, Exception{
 		//Integer transactionID =  Integer.parseInt(request.getParameter("ID"));
 		
@@ -145,7 +160,7 @@ public class RegularEmployeeController {
 		String status = (String) request.getParameter("approveReject");
 		if(status.equals("Approve")){
 			boolean success = regEmpService.approveTransaction(transactionID);
-			if(success == true){
+			if(success){
 				model.addAttribute("successMessage", "Transaction approved successfully");
 				return "Homepage/success";
 			}else{
@@ -154,7 +169,7 @@ public class RegularEmployeeController {
 			}
 		}else if(status.equals("Reject")){
 			boolean success = regEmpService.rejectTransaction(transactionID);
-			if(success == true){
+			if(success){
 				model.addAttribute("successMessage", "Transaction rejected successfully");
 				return "Homepage/success";
 			}else{
@@ -227,6 +242,12 @@ public class RegularEmployeeController {
 		{
 			return "RegularEmployee/getUserEmailModifyUser";
 		}
+		
+		 boolean exists = regEmpService.checkPhoneNumber(userDetails.getEmailId(), userDetails.getPhoneNumber());
+			if(!exists){
+				throw new SurakshitException("userNotExists");
+			}
+			
 		UserBean userB = regEmpService.getUserFromEmailID(userDetails.getEmailId());		
 		if(userB == null){
 			throw new SurakshitException("userNotExists");

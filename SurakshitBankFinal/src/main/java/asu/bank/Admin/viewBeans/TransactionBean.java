@@ -30,6 +30,14 @@ public class TransactionBean {
 	private String transactionCurrentStatus;
 	private Date transactionCreatedAt;
 	
+	private String encryptedTransactionId;
+	
+	public String getEncryptedTransactionId() {
+		return encryptedTransactionId;
+	}
+	public void setEncryptedTransactionId(String encryptedTransactionId) {
+		this.encryptedTransactionId = encryptedTransactionId;
+	}
 	public String getPrimaryUserEmail() {
 		return primaryUserEmail;
 	}

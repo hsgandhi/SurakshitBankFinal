@@ -26,7 +26,7 @@
 				<form:errors path="documentId"></form:errors><br />
 				
 				<form:label path="">Please enter internal user's password</form:label>
-				<form:input path="password" id="password"/> 
+				<form:password path="password" id="password"/> 
 				<form:errors path="password"></form:errors><br />
 								
 				<form:button> Submit </form:button>

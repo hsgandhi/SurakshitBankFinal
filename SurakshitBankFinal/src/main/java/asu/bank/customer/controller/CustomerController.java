@@ -21,6 +21,7 @@ import java.security.PublicKey;
 import java.util.List;
 import java.util.UUID;
 
+import asu.bank.RegularEmployee.viewBeans.TransactionBean;
 import asu.bank.customer.dao.CustomerDaoImpl;
 import asu.bank.customer.service.CustomerService;
 import asu.bank.customer.validator.CustomerAccountValidator;
@@ -33,6 +34,7 @@ import asu.bank.customer.viewBeans.InfoUpdateViewBean;
 import asu.bank.login.controller.LoginController;
 import asu.bank.merchant.service.MerchantService;
 import asu.bank.utility.KeyGenerataionUtility;
+import asu.bank.utility.MaskUtility;
 import asu.bank.utility.SurakshitException;
 
 @Controller
@@ -51,6 +53,9 @@ public class CustomerController {
 	
 	@Autowired
 	KeyGenerataionUtility keyGenerationUtility;
+	
+	@Autowired
+	MaskUtility maskUtility;
 	
 	private static final Logger logger = Logger.getLogger(CustomerController.class);
 	 private static final Logger secureLogger = Logger.getLogger("secure");
@@ -192,7 +197,7 @@ public class CustomerController {
 		
 		double amount = Double.parseDouble(accountDebitViewBean.getAmount());
 		
-		if(amount>5000)
+		if(amount>5000 && amount<=balance1)
 		{
 			model.addAttribute("successMessage", "Your request is pending with the bank and current balance is" + finalBalance);
 		}	
@@ -345,7 +350,7 @@ public class CustomerController {
 	}
 		
 
-	
+	//encrypt
 	@RequestMapping(value="/customerToMerchantPaymentDetails", method = RequestMethod.POST)
 	public String customerToMerchantPaymentDetails(@ModelAttribute("customerPaymentBean")@Valid CustomerPaymentBean customerPaymentBean, BindingResult result,ModelMap model) throws SurakshitException, Exception {
 		
@@ -379,6 +384,11 @@ public class CustomerController {
 		}
 		if(transaction!=null)
 		{
+			for(CustomerPaymentBean transactionBean: transaction)
+			{
+				transactionBean.setEncryptedTransactionId(maskUtility.getMaskedString(transactionBean.getTransactionId().toString()));
+			}
+			
 			model.addAttribute("successMessage","Your payments to be made to the Merchant");
 			model.addAttribute("transaction", transaction);
 		}
@@ -390,7 +400,7 @@ public class CustomerController {
 		return "customer/pendingTransactions";
 	}
 	
-	
+	//decrypt
 	@RequestMapping(value="/customerMerchantPayment", method = RequestMethod.POST)
 	public String customerMerchantPayment(HttpServletRequest request, ModelMap model) throws SurakshitException, Exception{
 		
@@ -411,9 +421,13 @@ public class CustomerController {
 		
 		
 		
-		Integer transactionID =  Integer.parseInt(request.getParameter("ID"));
+		//Integer transactionID =  Integer.parseInt(request.getParameter("ID"));
+		
+		String tranId= maskUtility.getOriginalString(request.getParameter("CrID"));
+		Integer transactionID =Integer.parseInt(tranId);
+		
 		String status = (String) request.getParameter("approveReject");
-		double finalBal=0;
+		Double finalBal=0.0;
 		if(status.equals("Approve")){
 			finalBal=customerService.customerMakePaymentApproved(transactionID.toString());
 		}else if(status.equals("Reject")){
@@ -423,7 +437,11 @@ public class CustomerController {
 		if(status.equals("")){return "customer/pendingTransactions";}
 		
 		List<CustomerPaymentBean> transaction= (List<CustomerPaymentBean>) customerService.custToMerchantPayment(userDetails.getUsername());
-		
+		//encrypt here
+		for(CustomerPaymentBean transactionBean: transaction)
+		{
+			transactionBean.setEncryptedTransactionId(maskUtility.getMaskedString(transactionBean.getTransactionId().toString()));
+		}
 	
 		if(finalBal!=Double.parseDouble(balance))
 		{
@@ -438,7 +456,7 @@ public class CustomerController {
 			
 			
 		}
-		
+		customerPaymentBean.setBalance(finalBal.toString());
 		logger.info("Transferring amount between the customers");
 		
 		return "customer/pendingTransactions";
