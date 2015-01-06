@@ -1,4 +1,4 @@
 SurakshitBankFinal
 ==================
 
-This is a repository of our SS project
+This is a banking application that concentrates on the security aspects of the real world.
